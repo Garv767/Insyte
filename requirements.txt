@@ -1,0 +1,21 @@
+# Oracle Database Thin Driver
+oracledb>=2.4.0
+
+# Backend Web Framework & Utilities
+Flask>=3.0.0
+Flask-Cors>=4.0.0
+python-dotenv>=1.0.1
+gunicorn>=21.2.0
+
+# Data Processing & Parsing (ETL only)
+pandas>=2.2.0
+numpy>=1.26.0
+openpyxl>=3.1.2
+
+# Oracle 23ai Vector Embedding Generation
+sentence-transformers>=3.0.0
+torch>=2.2.0
+
+# Testing & Linting
+pytest>=8.0.0
+requests>=2.31.0

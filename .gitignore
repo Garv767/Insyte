@@ -1,0 +1,55 @@
+# Environment variables & secrets
+.env
+.env.local
+*.env
+
+# Oracle Database Persistent Storage Volume
+oradata/
+*.dbf
+*.log
+*.ora
+
+# Python artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+ENV/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Data files (raw datasets should not bloat git repository)
+data/raw/*.csv
+data/raw/*.xlsx
+data/raw/*.parquet
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+
+# IDE and OS files
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log

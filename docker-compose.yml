@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  oracle-db:
+    image: container-registry.oracle.com/database/free:latest
+    container_name: oracle-23ai-insyte
+    ports:
+      - "${DB_PORT:-1521}:1521"
+    environment:
+      - ORACLE_PASSWORD=${DB_PASSWORD:-InsyteOracle23ai#Secure2026}
+    volumes:
+      - ./oradata:/opt/oracle/oradata
+    restart: always
