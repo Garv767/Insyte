@@ -17,19 +17,33 @@ _is_connected = False
 def init_pool():
     global _pool, _is_connected
     try:
-        import oracledb
-        _pool = oracledb.create_pool(
-            user=Config.DB_USER,
-            password=Config.DB_PASSWORD,
-            host=Config.DB_HOST,
-            port=Config.DB_PORT,
-            service_name=Config.DB_SERVICE,
-            min=Config.DB_POOL_MIN,
-            max=Config.DB_POOL_MAX,
-            increment=Config.DB_POOL_INCREMENT
-        )
+        pool_kwargs = {
+            "user": Config.DB_USER,
+            "password": Config.DB_PASSWORD,
+            "min": Config.DB_POOL_MIN,
+            "max": Config.DB_POOL_MAX,
+            "increment": Config.DB_POOL_INCREMENT
+        }
+        import os
+        if Config.WALLET_DIR and os.path.exists(Config.WALLET_DIR):
+            pool_kwargs["dsn"] = Config.TNS_NAME
+            pool_kwargs["config_dir"] = Config.WALLET_DIR
+            pool_kwargs["wallet_location"] = Config.WALLET_DIR
+            if Config.WALLET_PASSWORD:
+                pool_kwargs["wallet_password"] = Config.WALLET_PASSWORD
+            target_desc = f"Autonomous Database (Wallet: {Config.TNS_NAME})"
+        elif Config.DB_CONNECT_STRING:
+            pool_kwargs["dsn"] = Config.DB_CONNECT_STRING
+            target_desc = "Autonomous Database (TLS connect string)"
+        else:
+            pool_kwargs["host"] = Config.DB_HOST
+            pool_kwargs["port"] = Config.DB_PORT
+            pool_kwargs["service_name"] = Config.DB_SERVICE
+            target_desc = f"{Config.DB_HOST}:{Config.DB_PORT}/{Config.DB_SERVICE}"
+
+        _pool = oracledb.create_pool(**pool_kwargs)
         _is_connected = True
-        logger.info(f"Oracle 23ai Connection Pool initialized for {Config.DB_USER}@{Config.DB_HOST}:{Config.DB_PORT}/{Config.DB_SERVICE}")
+        logger.info(f"Oracle Connection Pool initialized for {Config.DB_USER}@{target_desc}")
         return True
     except Exception as e:
         _is_connected = False

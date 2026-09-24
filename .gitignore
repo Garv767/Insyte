@@ -9,6 +9,13 @@ oradata/
 *.log
 *.ora
 
+# Oracle Cloud Wallet Credentials & Certificates
+wallet/
+oracle_wallet/
+Wallet_*.zip
+*.sso
+*.p12
+
 # Python artifacts
 __pycache__/
 *.py[cod]

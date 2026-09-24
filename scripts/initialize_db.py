@@ -11,13 +11,15 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+DB_CONNECT_STRING = os.getenv("DB_CONNECT_STRING", "")
 DB_HOST = os.getenv("DB_HOST", "localhost")
 DB_PORT = int(os.getenv("DB_PORT", "1521"))
 DB_SERVICE = os.getenv("DB_SERVICE", "FREEPDB1")
+DB_USER = os.getenv("DB_USER", "ADMIN")
+DB_PASSWORD = os.getenv("DB_PASSWORD", "garv767@INSYTE")
 DB_SYS_USER = os.getenv("DB_SYS_USER", "SYS")
-DB_PASSWORD = os.getenv("DB_PASSWORD", "InsyteOracle23ai#Secure2026")
-APP_ADMIN_USER = os.getenv("APP_ADMIN_USER", "INSYTE_ADMIN")
-APP_ADMIN_PASSWORD = os.getenv("APP_ADMIN_PASSWORD", "AdminSecurePassword2026!")
+APP_ADMIN_USER = os.getenv("APP_ADMIN_USER", "ADMIN")
+APP_ADMIN_PASSWORD = os.getenv("APP_ADMIN_PASSWORD", DB_PASSWORD)
 
 try:
     import oracledb
@@ -28,8 +30,8 @@ except ImportError:
 SQL_DIR = Path(__file__).resolve().parent.parent / "database"
 
 SQL_SCRIPTS = [
-    ("01_users_roles.sql", True),   # Needs SYSDBA
-    ("02_schema.sql", False),       # Run as INSYTE_ADMIN
+    ("01_users_roles.sql", True),   # Needs ADMIN or SYS
+    ("02_schema.sql", False),
     ("03_sequences.sql", False),
     ("04_constraints.sql", False),
     ("05_indexes.sql", False),
@@ -51,12 +53,13 @@ def execute_sql_file(connection, filepath):
         content = f.read()
 
     # Split statements by semicolon or slash
-    # Simple statement splitter handling PL/SQL blocks
     raw_statements = content.split(";")
     for stmt in raw_statements:
         clean_stmt = stmt.strip()
-        # Skip SQL*Plus PROMPT and empty lines
+        # Skip SQL*Plus PROMPT and empty lines or container switches not allowed in serverless
         if not clean_stmt or clean_stmt.upper().startswith("PROMPT") or clean_stmt.startswith("--"):
+            continue
+        if "ALTER SESSION SET CONTAINER" in clean_stmt.upper():
             continue
         try:
             cursor.execute(clean_stmt)
@@ -65,63 +68,65 @@ def execute_sql_file(connection, filepath):
             # Ignore harmless object already exists or drop errors
             if err_obj.code in (942, 1920, 1921, 2289, 12003):
                 continue
-            print(f"  [WARN in {filepath.name}] Code {err_obj.code}: {err_obj.message[:80]}")
+            print(f"  [Notice in {filepath.name}] Code {err_obj.code}: {err_obj.message[:80]}")
     connection.commit()
     cursor.close()
 
 def main():
     print("=" * 70)
-    print("INSYTE — Database Initialization Engine (Oracle 23ai Free)")
+    print("INSYTE — Database Initialization Engine")
     print("=" * 70)
-    print(f"Target Service: {DB_HOST}:{DB_PORT}/{DB_SERVICE}")
-    
-    # 1. Connect as SYSDBA for User/Role Creation
-    print("\n[Step 1/2] Connecting as SYSDBA to configure security roles...")
-    try:
-        sys_conn = oracledb.connect(
-            user=DB_SYS_USER,
-            password=DB_PASSWORD,
-            host=DB_HOST,
-            port=DB_PORT,
-            service_name=DB_SERVICE,
-            mode=oracledb.SYSDBA
-        )
-        print("  Connected as SYSDBA.")
-        script_path = SQL_DIR / "01_users_roles.sql"
-        if script_path.exists():
-            print(f"  Executing {script_path.name}...")
-            execute_sql_file(sys_conn, script_path)
-            print("  Security roles and grants initialized.")
-        sys_conn.close()
-    except Exception as e:
-        print(f"  [Notice/Error with SYSDBA connection]: {e}")
-        print("  Proceeding to execute remaining scripts as INSYTE_ADMIN...")
+    if DB_CONNECT_STRING:
+        print("Target: Oracle Autonomous AI Database (OCI Serverless)")
+    else:
+        print(f"Target Service: {DB_HOST}:{DB_PORT}/{DB_SERVICE}")
 
-    # 2. Connect as INSYTE_ADMIN for Schema and Views
-    print("\n[Step 2/2] Connecting as INSYTE_ADMIN to deploy schema and views...")
-    try:
-        admin_conn = oracledb.connect(
-            user=APP_ADMIN_USER,
-            password=APP_ADMIN_PASSWORD,
-            host=DB_HOST,
-            port=DB_PORT,
-            service_name=DB_SERVICE
-        )
-        print(f"  Connected as {APP_ADMIN_USER}.")
+    WALLET_DIR_ENV = os.getenv("WALLET_DIR", "")
+    WALLET_DIR = os.path.abspath(WALLET_DIR_ENV) if WALLET_DIR_ENV else ""
+    TNS_NAME = os.getenv("TNS_NAME", "insyte_high")
+    WALLET_PASSWORD = os.getenv("WALLET_PASSWORD", "")
 
-        for script_name, is_sys in SQL_SCRIPTS[1:]:
+    # Connect to Autonomous Database or Local Oracle
+    print(f"\nConnecting as {DB_USER} to deploy schema objects...")
+    try:
+        if WALLET_DIR and os.path.exists(WALLET_DIR):
+            conn = oracledb.connect(
+                user=DB_USER,
+                password=DB_PASSWORD,
+                dsn=TNS_NAME,
+                config_dir=WALLET_DIR,
+                wallet_location=WALLET_DIR,
+                wallet_password=WALLET_PASSWORD
+            )
+        elif DB_CONNECT_STRING:
+            conn = oracledb.connect(
+                user=DB_USER,
+                password=DB_PASSWORD,
+                dsn=DB_CONNECT_STRING
+            )
+        else:
+            conn = oracledb.connect(
+                user=DB_USER,
+                password=DB_PASSWORD,
+                host=DB_HOST,
+                port=DB_PORT,
+                service_name=DB_SERVICE
+            )
+        print(f"  Connected successfully as {DB_USER}.")
+
+        # Execute scripts sequentially
+        for script_name, is_sys in SQL_SCRIPTS:
             script_path = SQL_DIR / script_name
             if script_path.exists():
                 print(f"  Executing {script_name}...")
-                execute_sql_file(admin_conn, script_path)
+                execute_sql_file(conn, script_path)
 
-        admin_conn.close()
+        conn.close()
         print("\n" + "=" * 70)
-        print("[SUCCESS] All 15 Oracle 23ai database scripts deployed successfully!")
+        print("[SUCCESS] All Oracle database scripts deployed successfully!")
         print("=" * 70)
     except Exception as e:
-        print(f"[ERROR connecting as {APP_ADMIN_USER}]: {e}")
-        print("Ensure Oracle container is running: docker compose up -d")
+        print(f"[ERROR]: {e}")
 
 if __name__ == "__main__":
     main()

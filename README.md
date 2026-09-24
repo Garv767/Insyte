@@ -1,9 +1,10 @@
 # INSYTE — E-Commerce Customer Behaviour Analytics
 
-> **Enterprise-Grade, Database-Centric Customer Intelligence Platform Powered by Oracle Database 23ai Free**
+> **Enterprise-Grade, Database-Centric Customer Intelligence Platform Powered by Oracle AI Database (Autonomous AI 26ai / 23ai Free)**
 
-[![Oracle 23ai](https://img.shields.io/badge/Oracle-23ai%20Free-red.svg)](https://www.oracle.com/database/free/)
-[![Docker](https://img.shields.io/badge/Docker-Compose-blue.svg)](https://www.docker.com/)
+[![Oracle AI Database](https://img.shields.io/badge/Oracle-Autonomous%20AI%2026ai%20%2F%2023ai-red.svg)](https://www.oracle.com/autonomous-database/)
+[![OCI Cloud Serverless](https://img.shields.io/badge/OCI-Autonomous%20Serverless-orange.svg)](https://cloud.oracle.com/)
+[![Docker](https://img.shields.io/badge/Docker-Compose%20Ready-blue.svg)](https://www.docker.com/)
 [![Python](https://img.shields.io/badge/Python-3.11+-yellow.svg)](https://www.python.org/)
 [![Flask](https://img.shields.io/badge/Flask-3.0+-green.svg)](https://palletsprojects.com/p/flask/)
 [![Vector Search](https://img.shields.io/badge/AI%20Vector-384--dim%20Cosine-purple.svg)](https://docs.oracle.com/en/database/oracle/oracle-database/23/vecse/)
@@ -17,7 +18,7 @@
 Unlike traditional web applications that offload analytics to Python or pandas memory, **INSYTE is strictly database-centric**:
 - **Zero External ML Clustering:** Customer RFM segmentation is calculated natively inside Oracle SQL using analytic window functions (`NTILE(5)` over partitioned orders).
 - **In-Database Cohort Modeling:** Retention matrices and customer lifecycle offsets are executed entirely within SQL using `MIN() OVER` and `MONTHS_BETWEEN()`.
-- **Modern Oracle 23ai Innovations:** Leverages native `VECTOR(384, FLOAT32)` data types with cosine distance similarity (`VECTOR_DISTANCE`) and binary `JSON` attributes with dot-notation query execution.
+- **Modern Oracle AI Database Innovations:** Leverages native `VECTOR(384, FLOAT32)` data types with cosine distance similarity (`VECTOR_DISTANCE`) and binary `JSON` attributes with dot-notation query execution.
 - **Enterprise Security & Governance:** Implements Oracle Data Control Language (DCL) enforcing least-privilege role segregation between `INSYTE_ADMIN` and `INSYTE_ANALYST`.
 - **Transparent Academic Evaluation:** Includes an in-app **SQL Insights** viewer detailing exact SQL syntax, bind parameters, execution durations, `EXPLAIN PLAN` tree structures, and live data dictionary introspection (`USER_TABLES`, `USER_CONSTRAINTS`, `USER_INDEXES`, `USER_MVIEWS`).
 
@@ -25,7 +26,7 @@ Unlike traditional web applications that offload analytics to Python or pandas m
 
 ## 2. Deployment Architecture & Portability Strategy
 
-INSYTE is designed for seamless, 1-click migration between a local development machine and a cloud droplet (e.g. DigitalOcean). All host and network configurations are decoupled via environment variables.
+INSYTE features a **dual-mode deployment architecture**, allowing seamless switching between Oracle Cloud Infrastructure (OCI) Autonomous Database Serverless and a local Docker container:
 
 ```
 Browser (Interactive Web Dashboard)
@@ -33,23 +34,20 @@ Browser (Interactive Web Dashboard)
       ▼ HTTP / JSON
 Flask Application & Connection Pool (python-oracledb Thin Mode)
       │
-      ▼ Port 1521 (FREEPDB1)
-Docker Container (container-registry.oracle.com/database/free:latest)
-      ├── Storage: Persistent Mount (./oradata -> /opt/oracle/oradata)
-      ├── Security: INSYTE_ADMIN (DDL/DML) & INSYTE_ANALYST (Read-Only)
-      ├── Core Relational: CUSTOMERS, PRODUCTS, ORDERS, ORDER_ITEMS
-      ├── Reviews & Media: REVIEWS, REVIEW_MEDIA
-      ├── Native AI: VECTOR(384, FLOAT32) & HNSW Cosine Index
-      ├── Native JSON: Dynamic Product Specs & Dot-Notation
-      └── In-Database Compute: RFM Window Functions, Cohorts, Materialized Views
+      ├── Mode 1: OCI Autonomous AI Database Serverless (Production Cloud)
+      │     ├── Connection: Mutual TLS (mTLS) via Client Credentials Wallet
+      │     ├── Service Profiles: insyte_high, insyte_medium, insyte_low
+      │     └── Host: adb.ap-hyderabad-1.oraclecloud.com:1522
+      │
+      └── Mode 2: Local Docker Container (Oracle Database 23ai Free)
+            ├── Connection: TCP Port 1521 (FREEPDB1)
+            └── Storage: Persistent Volume Mount (./oradata -> /opt/oracle/oradata)
 ```
 
-### Localhost vs DigitalOcean Configuration
-
-To migrate to DigitalOcean:
-1. Deploy `docker-compose.yml` to the Droplet.
-2. In `.env`, change `DB_HOST=localhost` to `DB_HOST=<DROPLET_PUBLIC_IP>` (or the Docker network service name `oracle-db`).
-3. No source code changes are required.
+### Decoupled Connection Layer
+All database configuration parameters reside in `.env`, handled transparently by `app/config.py` and `app/database.py`:
+- When `WALLET_DIR` contains client credentials (`cwallet.sso`, `tnsnames.ora`), the driver automatically connects via **mTLS** to Autonomous Database.
+- When `WALLET_DIR` is omitted or empty, the driver falls back to standard host/port/service TCP connection (ideal for local Docker or DigitalOcean self-hosted instances).
 
 ---
 
@@ -67,26 +65,31 @@ To migrate to DigitalOcean:
 
 ## 4. Database Schema & Dynamic Mapping Layer
 
-### Dynamic Column Mapping
-The ingestion pipeline automatically detects variations in the input data schema and creates a normalized mapping:
+### Core Database Entities
 
-| Raw Dataset Field | Canonical Column | Database Table | Description |
-| :--- | :--- | :--- | :--- |
-| `Invoice` / `InvoiceNo` | `invoice_no` | `ORDERS`, `ORDER_ITEMS` | Handles cancellation prefixes (`C%`). |
-| `StockCode` / `sku` | `stock_code` | `PRODUCTS`, `ORDER_ITEMS` | Alphanumeric product identifier. |
-| `Description` | `original_description` | `PRODUCTS` | Preserved raw and normalized via REGEXP. |
-| `Quantity` | `quantity` | `ORDER_ITEMS` | Negative quantities moved to `TRANSACTION_ADJUSTMENTS`. |
-| `InvoiceDate` | `invoice_date` | `ORDERS` | `TIMESTAMP WITH TIME ZONE`. |
-| `Price` / `UnitPrice` | `unit_price` | `ORDER_ITEMS`, `PRODUCTS` | Preserved at order item level. |
-| `Customer ID` | `customer_id` | `CUSTOMERS`, `ORDERS` | Null customer IDs tracked as Guest orders. |
-| `Country` | `country` | `CUSTOMERS`, `ORDERS` | Normalized geographic attribute. |
-| `Review Text` | `review_text` | `REVIEWS` | Textual feedback (optional). |
-| `Rating` | `rating` | `REVIEWS` | 1-to-5 star rating (optional). |
-| `Media URL` | `media_url` | `REVIEW_MEDIA` | Image/Video link (optional). |
+| Table Name | Description | Key Innovations |
+| :--- | :--- | :--- |
+| `CUSTOMERS` | Master customer directory | First-seen cohort derivation, RFM score assignment |
+| `PRODUCTS` | Product catalogue with metadata | `JSON` attributes for specs, `VECTOR(384, FLOAT32)` for semantic search |
+| `ORDERS` | Transactional order headers | Status handling (`COMPLETED`, `CANCELLED`), temporal indexing |
+| `ORDER_ITEMS` | Line item transactional records | Composite B-Tree indexes, integrity constraints |
+| `REVIEWS` | Customer feedback & sentiment | Star ratings, sentiment flags, normalized text |
+| `REVIEW_MEDIA` | User-generated media assets | Image/video URL tracking, verification badges |
+| `TRANSACTION_ADJUSTMENTS` | Audit trail for negative adjustments | Isolates refunds, damaged items, cancellations |
+| `ETL_AUDIT` | Batch pipeline execution metrics | Execution times, processed row counts, status |
+
+### Materialized Views
+- `MV_MONTHLY_REVENUE_TRENDS`: Precomputes monthly gross revenue, net revenue, cancelled volume, and active customer counts with fast refresh capability.
+- `MV_CUSTOMER_RFM_SUMMARY`: Materializes customer recency, frequency, monetary value, and tier assignments for sub-millisecond dashboard queries.
 
 ---
 
-## 5. Quickstart & Local Setup
+## 5. Quickstart & Setup Guide
+
+### Prerequisites
+- Python 3.11+
+- Git
+- Oracle Autonomous Database Wallet (OCI) OR Docker Engine (for local 23ai Free)
 
 ### Step 1: Clone Repository & Configure Environment
 ```bash
@@ -95,30 +98,76 @@ cd Insyte
 copy .env.example .env
 ```
 
-### Step 2: Start Oracle Database 23ai Free Container
-```bash
-docker compose up -d
-```
-*Note: Oracle 23ai initializes within 1–2 minutes. Storage is automatically persisted inside `./oradata`.*
+### Step 2: Configure Database Credentials (.env)
 
-### Step 3: Install Python Dependencies
-```bash
+#### Option A: Oracle Cloud Autonomous Database (Recommended)
+1. Download your Autonomous Database client credentials zip (`Wallet_INSYTE.zip`) from OCI Console.
+2. Extract the contents into the `wallet/` directory:
+   ```powershell
+   python -c "import zipfile; zipfile.ZipFile('Wallet_INSYTE.zip').extractall('wallet')"
+   ```
+3. Set your credentials in `.env`:
+   ```env
+   DB_USER=ADMIN
+   DB_PASSWORD=your_secure_password
+   TNS_NAME=insyte_high
+   WALLET_DIR=./wallet
+   WALLET_PASSWORD=your_secure_password
+   ```
+
+#### Option B: Local Oracle Database 23ai Free (Docker)
+1. Start the container:
+   ```bash
+   docker compose up -d
+   ```
+2. Configure `.env` for direct TCP:
+   ```env
+   DB_HOST=localhost
+   DB_PORT=1521
+   DB_SERVICE=FREEPDB1
+   DB_USER=INSYTE_ADMIN
+   DB_PASSWORD=your_password
+   # WALLET_DIR left commented out
+   ```
+
+### Step 3: Install Dependencies
+```powershell
 python -m venv venv
-venv\Scripts\activate     # Windows
+.\venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
 ### Step 4: Verify Database Connectivity
-```bash
+```powershell
 python scripts/test_connection.py
 ```
 
-### Step 5: Execute Database Initialization Scripts
-Connect via SQLcl, SQL Developer, or Python and execute:
-```sql
-@database/security/01_users_roles.sql
-@database/schema/02_schema.sql
+### Step 5: Deploy Schema & Objects
+Deploy all DDL, sequences, materialized views, and analytical views:
+```powershell
+python scripts/initialize_db.py
 ```
+
+### Step 6: Ingest Dataset & Generate Vectors
+1. Place your raw dataset (e.g. `online_retail_II.csv`) inside `data/raw/`.
+2. Run data ingestion:
+   ```powershell
+   python scripts/import_data.py data/raw/online_retail_II.csv
+   ```
+3. Generate AI vector embeddings for products:
+   ```powershell
+   python scripts/generate_embeddings.py
+   ```
+4. Validate data quality:
+   ```powershell
+   python scripts/validate_data.py
+   ```
+
+### Step 7: Launch the Analytics Dashboard
+```powershell
+python app/app.py
+```
+Open your browser and navigate to `http://localhost:5000`.
 
 ---
 
@@ -133,5 +182,12 @@ Connect via SQLcl, SQL Developer, or Python and execute:
 
 ---
 
-## 7. License & Academic Integrity
+## 7. Security & Credential Protection
+- All database credentials, tokens, and encryption keys are strictly excluded from version control via `.gitignore`.
+- OCI Wallet files (`*.sso`, `*.p12`, `*.jks`, `*.pem`, `Wallet_*.zip`) and local database storage (`oradata/`) are permanently ignored.
+- Dual database roles (`INSYTE_ADMIN` and `INSYTE_ANALYST`) ensure the web application can operate under least-privilege principles.
+
+---
+
+## 8. License & Academic Integrity
 Developed as an advanced database architecture and behavioral analytics demonstration. All source queries and designs adhere strictly to reproducible SQL standards without synthetic or fabricated data.

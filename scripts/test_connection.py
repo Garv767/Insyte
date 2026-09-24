@@ -11,19 +11,32 @@ from dotenv import load_dotenv
 # Load environment variables
 load_dotenv()
 
+WALLET_DIR_ENV = os.getenv("WALLET_DIR", "")
+WALLET_DIR = os.path.abspath(WALLET_DIR_ENV) if WALLET_DIR_ENV else ""
+TNS_NAME = os.getenv("TNS_NAME", "insyte_high")
+WALLET_PASSWORD = os.getenv("WALLET_PASSWORD", "")
+
+DB_CONNECT_STRING = os.getenv("DB_CONNECT_STRING", "")
 DB_HOST = os.getenv("DB_HOST", "localhost")
 DB_PORT = int(os.getenv("DB_PORT", "1521"))
 DB_SERVICE = os.getenv("DB_SERVICE", "FREEPDB1")
-DB_USER = os.getenv("APP_ADMIN_USER", os.getenv("DB_SYS_USER", "INSYTE_ADMIN"))
-DB_PASSWORD = os.getenv("APP_ADMIN_PASSWORD", os.getenv("DB_PASSWORD", ""))
+DB_USER = os.getenv("DB_USER", os.getenv("APP_ADMIN_USER", "ADMIN"))
+DB_PASSWORD = os.getenv("DB_PASSWORD", os.getenv("APP_ADMIN_PASSWORD", ""))
 
 print("=" * 60)
-print("INSYTE — Oracle Database 23ai Connectivity Test")
+print("INSYTE — Oracle Database Connectivity Test")
 print("=" * 60)
-print(f"Target Host    : {DB_HOST}")
-print(f"Target Port    : {DB_PORT}")
-print(f"Service Name   : {DB_SERVICE}")
-print(f"Database User  : {DB_USER}")
+if WALLET_DIR and os.path.exists(WALLET_DIR):
+    print(f"Target Mode    : Oracle Autonomous AI Database (mTLS Wallet)")
+    print(f"TNS Profile    : {TNS_NAME}")
+    print(f"Wallet Path    : {WALLET_DIR}")
+    print(f"User           : {DB_USER}")
+elif DB_CONNECT_STRING:
+    print(f"Target Mode    : Oracle Autonomous AI Database (TLS Connect String)")
+    print(f"User           : {DB_USER}")
+else:
+    print(f"Target Host    : {DB_HOST}:{DB_PORT}/{DB_SERVICE}")
+    print(f"User           : {DB_USER}")
 print("-" * 60)
 
 try:
@@ -34,14 +47,30 @@ except ImportError:
     sys.exit(1)
 
 try:
-    # Use python-oracledb in default Thin mode
-    connection = oracledb.connect(
-        user=DB_USER,
-        password=DB_PASSWORD,
-        host=DB_HOST,
-        port=DB_PORT,
-        service_name=DB_SERVICE
-    )
+    # Use python-oracledb in Thin mode
+    if WALLET_DIR and os.path.exists(WALLET_DIR):
+        connection = oracledb.connect(
+            user=DB_USER,
+            password=DB_PASSWORD,
+            dsn=TNS_NAME,
+            config_dir=WALLET_DIR,
+            wallet_location=WALLET_DIR,
+            wallet_password=WALLET_PASSWORD
+        )
+    elif DB_CONNECT_STRING:
+        connection = oracledb.connect(
+            user=DB_USER,
+            password=DB_PASSWORD,
+            dsn=DB_CONNECT_STRING
+        )
+    else:
+        connection = oracledb.connect(
+            user=DB_USER,
+            password=DB_PASSWORD,
+            host=DB_HOST,
+            port=DB_PORT,
+            service_name=DB_SERVICE
+        )
     
     cursor = connection.cursor()
     
