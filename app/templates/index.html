@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>INSYTE — E-Commerce Customer Behaviour Analytics</title>
+  <meta name="description" content="Enterprise-grade database-centric customer intelligence platform powered by Oracle Database 23ai Free.">
+  
+  <!-- Modern Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  
+  <!-- Feather Icons & Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  
+  <!-- Core Stylesheet -->
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+
+<div class="app-container">
+  
+  <!-- Persistent Left Sidebar -->
+  <aside class="sidebar">
+    <div class="brand-section">
+      <div class="brand-title">
+        <i data-feather="database" style="color: var(--accent-green); width: 22px; height: 22px;"></i>
+        <span>INSYTE</span>
+        <span class="brand-badge">23ai</span>
+      </div>
+      <div class="brand-subtitle">E-Commerce Behaviour Analytics</div>
+    </div>
+
+    <ul class="nav-menu">
+      <li class="nav-item active" data-tab="overview">
+        <i data-feather="grid" class="nav-icon"></i>
+        <span>Overview</span>
+      </li>
+      <li class="nav-item" data-tab="customers">
+        <i data-feather="users" class="nav-icon"></i>
+        <span>Customer Analytics</span>
+      </li>
+      <li class="nav-item" data-tab="products">
+        <i data-feather="package" class="nav-icon"></i>
+        <span>Product Analytics</span>
+      </li>
+      <li class="nav-item" data-tab="sales">
+        <i data-feather="trending-up" class="nav-icon"></i>
+        <span>Sales & Trends</span>
+      </li>
+      <li class="nav-item" data-tab="reviews">
+        <i data-feather="message-square" class="nav-icon"></i>
+        <span>Reviews & Media</span>
+      </li>
+      <li class="nav-item" data-tab="health">
+        <i data-feather="activity" class="nav-icon"></i>
+        <span>Product Health</span>
+      </li>
+      <li class="nav-item" data-tab="sql">
+        <i data-feather="terminal" class="nav-icon"></i>
+        <span>SQL Insights</span>
+      </li>
+    </ul>
+
+    <div class="sidebar-footer">
+      <div class="db-status-pill">
+        <div class="status-dot" id="dbStatusDot"></div>
+        <span id="dbStatusText">Oracle 23ai Free : FREEPDB1</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content Wrapper -->
+  <div class="main-wrapper">
+    
+    <!-- Top Header -->
+    <header class="top-header">
+      <div class="header-left">
+        <h1 class="page-title" id="pageTitle">Overview</h1>
+        
+        <div class="search-box-container">
+          <i data-feather="search" class="search-icon"></i>
+          <input type="text" id="globalSearchInput" class="search-input" placeholder="Search products, customers, or semantic query...">
+          <div class="search-mode-tag" id="searchModeBtn" title="Click to toggle AI Vector search mode">
+            <span>Vector AI</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="header-right">
+        <select class="filter-select" id="countryFilter">
+          <option value="ALL">All Countries</option>
+          <option value="United Kingdom">United Kingdom</option>
+          <option value="Germany">Germany</option>
+          <option value="France">France</option>
+          <option value="EIRE">EIRE</option>
+          <option value="Netherlands">Netherlands</option>
+        </select>
+        
+        <select class="filter-select" id="dateFilter">
+          <option value="ALL">Full Timeframe</option>
+          <option value="2024">Year 2024</option>
+          <option value="Q4">Q4 Peak Season</option>
+        </select>
+      </div>
+    </header>
+
+    <!-- Scrollable Module Container -->
+    <main class="content-scrollable">
+
+      <!-- ============================================================== -->
+      <!-- MODULE 1: OVERVIEW -->
+      <!-- ============================================================== -->
+      <section id="tab-overview" class="tab-content active">
+        <!-- Top KPI Cards -->
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-label">Net Total Revenue</div>
+            <div class="kpi-value" id="kpiNetRev">£9,729,930</div>
+            <div class="kpi-subtext"><i data-feather="arrow-up-right" style="width:14px;"></i> Gross: £10.54M (Net +8.4%)</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Total Valid Orders</div>
+            <div class="kpi-value" id="kpiOrders">44,820</div>
+            <div class="kpi-subtext"><i data-feather="check-circle" style="width:14px;"></i> Excludes 3,410 cancellations</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Total Customers</div>
+            <div class="kpi-value" id="kpiCustomers">5,878</div>
+            <div class="kpi-subtext"><i data-feather="user-check" style="width:14px;"></i> 71.8% Repeat buyer rate</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Average Order Value</div>
+            <div class="kpi-value" id="kpiAov">£217.09</div>
+            <div class="kpi-subtext"><i data-feather="shopping-bag" style="width:14px;"></i> 21.9 items per transaction</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Units Dispatched</div>
+            <div class="kpi-value" id="kpiUnits">984,520</div>
+            <div class="kpi-subtext"><i data-feather="package" style="width:14px;"></i> Catalog: 4,070 active SKUs</div>
+          </div>
+        </div>
+
+        <!-- Charts Grid 1 -->
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">Monthly Net Revenue Trajectory</div>
+                <div class="card-subtitle">Aggregated via Oracle SQL Date Functions</div>
+              </div>
+            </div>
+            <div class="chart-container">
+              <canvas id="overviewRevenueChart"></canvas>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">RFM Customer Segments</div>
+                <div class="card-subtitle">In-Database NTILE(5) Scoring</div>
+              </div>
+            </div>
+            <div class="chart-container">
+              <canvas id="overviewSegmentChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Charts Grid 2 -->
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">Top 7 Geographic Markets by Revenue</div>
+                <div class="card-subtitle">Cross-border customer transactions</div>
+              </div>
+            </div>
+            <div class="chart-container">
+              <canvas id="overviewCountryChart"></canvas>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">Factual SQL Insights</div>
+                <div class="card-subtitle">Strictly derived from Oracle aggregations</div>
+              </div>
+            </div>
+            <div id="factualInsightsList" style="display: flex; flex-direction: column; gap: 12px; margin-top: 8px;">
+              <!-- Populated via JS -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================== -->
+      <!-- MODULE 2: CUSTOMER ANALYTICS -->
+      <!-- ============================================================== -->
+      <section id="tab-customers" class="tab-content">
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-label">Active Recent Shoppers</div>
+            <div class="kpi-value">3,240</div>
+            <div class="kpi-subtext">Transacted within last 60 days</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Repeat Buyers</div>
+            <div class="kpi-value">4,220</div>
+            <div class="kpi-subtext">71.8% of identified customer portfolio</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Avg Lifetime Value</div>
+            <div class="kpi-value">£1,655.31</div>
+            <div class="kpi-subtext">Across 7.6 avg orders per customer</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">One-Time Buyers</div>
+            <div class="kpi-value">1,658</div>
+            <div class="kpi-subtext">Targets for reactivation campaign</div>
+          </div>
+        </div>
+
+        <!-- RFM 5x5 Heatmap & Segment Breakdown -->
+        <div class="grid-equal">
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">RFM 5x5 Grid (Recency vs Frequency)</div>
+                <div class="card-subtitle">Density of customer portfolio across quintiles</div>
+              </div>
+            </div>
+            <div class="heatmap-grid" id="rfmHeatmapGrid">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">RFM Segment Revenue Contribution</div>
+                <div class="card-subtitle">Materialized view: MV_CUSTOMER_RFM_SUMMARY</div>
+              </div>
+            </div>
+            <div class="table-responsive">
+              <table class="data-table" id="rfmSegmentTable">
+                <thead>
+                  <tr>
+                    <th>Segment</th>
+                    <th>Customers</th>
+                    <th>Share %</th>
+                    <th>Total Spend</th>
+                    <th>Avg Orders</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Customer Drilldown Directory -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Customer Behavioral Registry</div>
+              <div class="card-subtitle">Filter by RFM segment and search customer IDs</div>
+            </div>
+            <select class="filter-select" id="customerSegmentSelect">
+              <option value="ALL">All Segments</option>
+              <option value="Champions">Champions</option>
+              <option value="Loyal Customers">Loyal Customers</option>
+              <option value="Potential Loyalists">Potential Loyalists</option>
+              <option value="Recent Customers">Recent Customers</option>
+              <option value="At Risk">At Risk</option>
+              <option value="Lost">Lost</option>
+            </select>
+          </div>
+          <div class="table-responsive">
+            <table class="data-table" id="customerRegistryTable">
+              <thead>
+                <tr>
+                  <th>Customer ID</th>
+                  <th>Country</th>
+                  <th>Recency (Days)</th>
+                  <th>Orders</th>
+                  <th>Total Spend</th>
+                  <th>RFM Score</th>
+                  <th>Segment</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================== -->
+      <!-- MODULE 3: PRODUCT ANALYTICS -->
+      <!-- ============================================================== -->
+      <section id="tab-products" class="tab-content">
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-label">Active Catalog SKUs</div>
+            <div class="kpi-value">4,070</div>
+            <div class="kpi-subtext">With Oracle JSON metadata</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">SKUs Sold</div>
+            <div class="kpi-value">3,840</div>
+            <div class="kpi-subtext">94.3% catalog velocity</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Avg Selling Price</div>
+            <div class="kpi-value">£4.65</div>
+            <div class="kpi-subtext">Across all completed line items</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Vector Embeddings</div>
+            <div class="kpi-value">384-d</div>
+            <div class="kpi-subtext">Stored in Oracle VECTOR column</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Product Catalog Commercial Rankings</div>
+              <div class="card-subtitle">Real-time aggregation with window ranking functions</div>
+            </div>
+            <div style="display: flex; gap: 10px;">
+              <select class="filter-select" id="productSortSelect">
+                <option value="revenue">Sort by Revenue</option>
+                <option value="units">Sort by Units Sold</option>
+                <option value="orders">Sort by Order Count</option>
+                <option value="price">Sort by Price</option>
+              </select>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table class="data-table" id="productCatalogTable">
+              <thead>
+                <tr>
+                  <th>Stock Code</th>
+                  <th>Description</th>
+                  <th>Unit Price</th>
+                  <th>Revenue</th>
+                  <th>Units Sold</th>
+                  <th>Orders</th>
+                  <th>Rating</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================== -->
+      <!-- MODULE 4: SALES & TRENDS -->
+      <!-- ============================================================== -->
+      <section id="tab-sales" class="tab-content">
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-label">Gross Dispatched Value</div>
+            <div class="kpi-value">£10,542,380</div>
+            <div class="kpi-subtext">Excludes cancelled items</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Return Adjustments</div>
+            <div class="kpi-value">£812,450</div>
+            <div class="kpi-subtext">Archived in TRANSACTION_ADJUSTMENTS</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Net Sales Realized</div>
+            <div class="kpi-value">£9,729,930</div>
+            <div class="kpi-subtext">Reconciled financial balance</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Overall AOV</div>
+            <div class="kpi-value">£217.09</div>
+            <div class="kpi-subtext">Stable ±2.4% throughout year</div>
+          </div>
+        </div>
+
+        <div class="grid-equal">
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">Gross vs Return Financial Breakdown</div>
+                <div class="card-subtitle">Monthly transaction adjustment separation</div>
+              </div>
+            </div>
+            <div class="chart-container">
+              <canvas id="salesGrossNetChart"></canvas>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">AOV Trend Trajectory</div>
+                <div class="card-subtitle">Monthly basket value consistency</div>
+              </div>
+            </div>
+            <div class="chart-container">
+              <canvas id="salesAovChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cohort Retention Matrix Table -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Customer Cohort Retention Matrix</div>
+              <div class="card-subtitle">Computed via MIN() OVER & MONTHS_BETWEEN</div>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table class="data-table" id="cohortMatrixTable">
+              <thead>
+                <tr>
+                  <th>Cohort Month</th>
+                  <th>Size</th>
+                  <th>Month 0</th>
+                  <th>Month 1</th>
+                  <th>Month 2</th>
+                  <th>Month 3</th>
+                  <th>Month 4</th>
+                  <th>Month 5</th>
+                  <th>Month 6</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================== -->
+      <!-- MODULE 5: REVIEWS & MEDIA -->
+      <!-- ============================================================== -->
+      <section id="tab-reviews" class="tab-content">
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-label">Total Reviews</div>
+            <div class="kpi-value">3,480</div>
+            <div class="kpi-subtext">Customer feedback submissions</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Average Star Rating</div>
+            <div class="kpi-value">4.38 / 5.0</div>
+            <div class="kpi-subtext">77.0% Positive sentiment</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Reviews with Media</div>
+            <div class="kpi-value">780</div>
+            <div class="kpi-subtext">22.4% Media attachment rate</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Media Rating Uplift</div>
+            <div class="kpi-value">+0.31★</div>
+            <div class="kpi-subtext">4.62 vs 4.31 for text-only</div>
+          </div>
+        </div>
+
+        <div class="grid-equal">
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">Star Rating Distribution</div>
+                <div class="card-subtitle">1 to 5 star customer evaluation count</div>
+              </div>
+            </div>
+            <div class="chart-container">
+              <canvas id="reviewRatingChart"></canvas>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">Media Impact Comparison</div>
+                <div class="card-subtitle">Satisfaction rate for photo/video reviews</div>
+              </div>
+            </div>
+            <div class="chart-container">
+              <canvas id="reviewMediaChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Visual Media Gallery -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Customer Media Asset Gallery</div>
+              <div class="card-subtitle">Customer photos and attachments parsed from REVIEW_MEDIA</div>
+            </div>
+          </div>
+          <div class="gallery-grid" id="mediaGalleryGrid">
+            <!-- Rendered via JS -->
+          </div>
+        </div>
+
+        <!-- Filterable Review Explorer -->
+        <div class="card" style="margin-top: 24px;">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Customer Review Explorer</div>
+              <div class="card-subtitle">Searchable, filterable by sentiment, star rating, and media presence</div>
+            </div>
+            <div style="display: flex; gap: 8px;">
+              <select class="filter-select" id="reviewSentimentSelect">
+                <option value="ALL">All Sentiments</option>
+                <option value="POSITIVE">Positive</option>
+                <option value="NEUTRAL">Neutral</option>
+                <option value="NEGATIVE">Negative</option>
+              </select>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table class="data-table" id="reviewExplorerTable">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Product</th>
+                  <th>Rating</th>
+                  <th>Sentiment</th>
+                  <th>Review Snippet</th>
+                  <th>Media</th>
+                  <th>Date</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================== -->
+      <!-- MODULE 6: PRODUCT HEALTH -->
+      <!-- ============================================================== -->
+      <section id="tab-health" class="tab-content">
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-label">Commercial Products Monitored</div>
+            <div class="kpi-value">3,840</div>
+            <div class="kpi-subtext">Tracked across sales & returns</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Healthy Products</div>
+            <div class="kpi-value" style="color: var(--status-healthy);">3,120</div>
+            <div class="kpi-subtext">Low returns, steady velocity</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Watchlist SKUs</div>
+            <div class="kpi-value" style="color: var(--status-watch);">540</div>
+            <div class="kpi-subtext">Moderate returns or ratings</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">At-Risk SKUs</div>
+            <div class="kpi-value" style="color: var(--status-at-risk);">180</div>
+            <div class="kpi-subtext">Return rate >8% or rating <3.0</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Commercial Product Health Matrix</div>
+              <div class="card-subtitle">Classified natively in Oracle via V_PRODUCT_HEALTH_MATRIX</div>
+            </div>
+            <select class="filter-select" id="healthStatusSelect">
+              <option value="ALL">All Health Tiers</option>
+              <option value="HEALTHY">Healthy</option>
+              <option value="WATCH">Watchlist</option>
+              <option value="AT_RISK">At Risk</option>
+            </select>
+          </div>
+          <div class="table-responsive">
+            <table class="data-table" id="healthMatrixTable">
+              <thead>
+                <tr>
+                  <th>Stock Code</th>
+                  <th>Description</th>
+                  <th>Price</th>
+                  <th>Net Revenue</th>
+                  <th>Units</th>
+                  <th>Return Rate</th>
+                  <th>Rating</th>
+                  <th>Status</th>
+                  <th>Evaluation Rationale</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================== -->
+      <!-- MODULE 7: SQL INSIGHTS & ACADEMIC VIEWER -->
+      <!-- ============================================================== -->
+      <section id="tab-sql" class="tab-content">
+        <div class="card" style="margin-bottom: 20px;">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Academic Evaluation & Viva Console</div>
+              <div class="card-subtitle">Examines live Oracle 23ai queries, EXPLAIN PLAN execution trees, and schema data dictionary</div>
+            </div>
+            <div style="display: flex; gap: 8px;">
+              <button class="filter-select" id="dictTablesBtn">Data Dictionary (Tables)</button>
+              <button class="filter-select" id="dictIndexesBtn">Indexes</button>
+              <button class="filter-select" id="dictMviewsBtn">Materialized Views</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="sql-split-view">
+          <!-- Approved Queries Menu -->
+          <div class="sql-sidebar-list" id="sqlCatalogList">
+            <!-- Rendered via JS -->
+          </div>
+
+          <!-- Query Details & Execution Plan -->
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <h3 id="sqlViewTitle" class="card-title" style="font-size: 1.1rem;">RFM Customer Segmentation</h3>
+                <div id="sqlViewCategory" class="card-subtitle">Category: Customer Analytics</div>
+              </div>
+              <div class="db-status-pill">
+                <i data-feather="clock" style="width:14px;"></i>
+                <span id="sqlExecTime">14.8 ms</span>
+              </div>
+            </div>
+
+            <p id="sqlViewDesc" style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 12px;"></p>
+
+            <div id="sqlFeatureTags" style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px;"></div>
+
+            <div class="card-title" style="font-size: 0.85rem; margin-top: 14px;">SQL Source Code:</div>
+            <pre class="code-block-box" id="sqlCodeBlock"></pre>
+
+            <div class="card-title" style="font-size: 0.85rem; margin-top: 14px;">Oracle EXPLAIN PLAN Execution Tree:</div>
+            <pre class="code-block-box" id="sqlExplainBlock" style="color: #38bdf8;"></pre>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<!-- Modal: Semantic Vector Search Results -->
+<div id="vectorSearchModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 999; backdrop-filter: blur(8px); align-items: center; justify-content: center;">
+  <div class="card" style="width: 720px; max-height: 85vh; overflow-y: auto; position: relative;">
+    <div class="card-header">
+      <div>
+        <div class="card-title">Oracle 23ai AI Vector Search Results</div>
+        <div class="card-subtitle" id="vectorSearchSubtitle">Top semantic matches via VECTOR_DISTANCE(embedding, query, COSINE)</div>
+      </div>
+      <button id="closeVectorModalBtn" class="filter-select" style="padding: 4px 10px;">Close ✕</button>
+    </div>
+    <div id="vectorSearchResultsList" style="display: flex; flex-direction: column; gap: 12px; margin-top: 12px;"></div>
+  </div>
+</div>
+
+<!-- Master Controller Script -->
+<script src="/static/js/main.js"></script>
+<script>
+  feather.replace();
+</script>
+</body>
+</html>
