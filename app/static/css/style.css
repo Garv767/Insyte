@@ -4,36 +4,38 @@
    ============================================================================== */
 
 :root {
-  --bg-primary: #0b101a;
-  --bg-secondary: #121927;
-  --bg-card: rgba(17, 24, 39, 0.85);
-  --bg-card-hover: rgba(31, 41, 55, 0.7);
-  --bg-glass: rgba(17, 24, 39, 0.6);
-  --border-subtle: rgba(255, 255, 255, 0.08);
+  /* Premium Light Theme */
+  --bg-primary: #f8fafc;
+  --bg-secondary: #ffffff;
+  --bg-card: #ffffff;
+  --bg-card-hover: #f1f5f9;
+  --bg-glass: rgba(0, 0, 0, 0.85);
+  
+  --border-subtle: #e2e8f0;
   --border-active: rgba(16, 185, 129, 0.4);
   
   --accent-green: #10b981;
   --accent-green-dark: #059669;
   --accent-green-light: #34d399;
-  --accent-green-glow: rgba(16, 185, 129, 0.15);
+  --accent-green-glow: rgba(16, 185, 129, 0.1);
   
   --status-healthy: #10b981;
   --status-watch: #f59e0b;
   --status-at-risk: #ef4444;
   
-  --text-primary: #f9fafb;
-  --text-secondary: #9ca3af;
-  --text-muted: #6b7280;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
   
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 16px;
   --radius-xl: 20px;
   
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.25);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.16);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
-  --shadow-glow: 0 0 20px rgba(16, 185, 129, 0.2);
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.03);
+  --shadow-glow: 0 0 15px rgba(16, 185, 129, 0.1);
   
   --sidebar-width: 260px;
   --header-height: 70px;
@@ -88,7 +90,7 @@ body {
   font-size: 1.25rem;
   font-weight: 700;
   letter-spacing: -0.02em;
-  color: #fff;
+  color: var(--text-primary);
 }
 
 .brand-badge {
@@ -132,7 +134,7 @@ body {
 }
 
 .nav-item:hover {
-  background-color: rgba(255, 255, 255, 0.04);
+  background-color: rgba(0, 0, 0, 0.04);
   color: var(--text-primary);
 }
 
@@ -161,7 +163,7 @@ body {
   gap: 8px;
   font-size: 0.75rem;
   color: var(--text-secondary);
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(0, 0, 0, 0.03);
   padding: 8px 12px;
   border-radius: var(--radius-sm);
   border: 1px solid var(--border-subtle);
@@ -193,7 +195,7 @@ body {
   align-items: center;
   justify-content: space-between;
   padding: 0 32px;
-  background-color: rgba(10, 14, 23, 0.8);
+  background-color: rgba(255, 255, 255, 0.9); border-bottom: 1px solid var(--border-subtle);
   backdrop-filter: blur(12px);
   z-index: 30;
 }
@@ -217,7 +219,7 @@ body {
 
 .search-input {
   width: 100%;
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: rgba(0, 0, 0, 0.05);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
   padding: 9px 14px 9px 38px;
@@ -229,7 +231,7 @@ body {
 .search-input:focus {
   outline: none;
   border-color: var(--accent-green);
-  background-color: rgba(255, 255, 255, 0.08);
+  background-color: rgba(0, 0, 0, 0.08);
   box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
 }
 
@@ -265,7 +267,7 @@ body {
 }
 
 .filter-select {
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: rgba(0, 0, 0, 0.05);
   border: 1px solid var(--border-subtle);
   color: var(--text-secondary);
   font-size: 0.82rem;
@@ -276,7 +278,7 @@ body {
 }
 
 .filter-select:hover {
-  border-color: rgba(255, 255, 255, 0.2);
+  border-color: rgba(0, 0, 0, 0.2);
 }
 
 .content-scrollable {
@@ -320,7 +322,7 @@ body {
 
 .kpi-card:hover {
   transform: translateY(-2px);
-  border-color: rgba(255, 255, 255, 0.15);
+  border-color: rgba(0, 0, 0, 0.15);
 }
 
 .kpi-label {
@@ -335,7 +337,7 @@ body {
 .kpi-value {
   font-size: 1.65rem;
   font-weight: 700;
-  color: #fff;
+  color: var(--text-primary);
   letter-spacing: -0.02em;
 }
 
@@ -423,11 +425,11 @@ body {
 .data-table td {
   padding: 12px 14px;
   color: var(--text-secondary);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
 }
 
 .data-table tr:hover td {
-  background-color: rgba(255, 255, 255, 0.02);
+  background-color: rgba(0, 0, 0, 0.02);
   color: var(--text-primary);
 }
 
@@ -468,7 +470,7 @@ body {
 }
 
 .heatmap-cell {
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(0, 0, 0, 0.03);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-sm);
   padding: 14px 10px;
@@ -484,7 +486,7 @@ body {
 .heatmap-cell-val {
   font-size: 1.1rem;
   font-weight: 700;
-  color: #fff;
+  color: var(--text-primary);
 }
 
 .heatmap-cell-label {
@@ -512,7 +514,7 @@ body {
 
 .media-card:hover {
   transform: translateY(-3px);
-  border-color: rgba(255, 255, 255, 0.15);
+  border-color: rgba(0, 0, 0, 0.15);
 }
 
 .media-thumbnail {
@@ -529,7 +531,7 @@ body {
 .media-product {
   font-size: 0.85rem;
   font-weight: 600;
-  color: #fff;
+  color: var(--text-primary);
   margin-bottom: 6px;
 }
 
@@ -572,8 +574,8 @@ body {
 }
 
 .sql-item-btn:hover {
-  background: rgba(255, 255, 255, 0.04);
-  color: #fff;
+  background: rgba(0, 0, 0, 0.04);
+  color: var(--text-primary);
 }
 
 .sql-item-btn.active {

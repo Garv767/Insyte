@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>INSYTE — E-Commerce Customer Behaviour Analytics</title>
-  <meta name="description" content="Enterprise-grade database-centric customer intelligence platform powered by Oracle Database 23ai Free.">
+  <meta name="description" content="Enterprise-grade database-centric customer intelligence platform powered by Database Serverless Free.">
   
   <!-- Modern Typography -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -28,7 +28,6 @@
       <div class="brand-title">
         <i data-feather="database" style="color: var(--accent-green); width: 22px; height: 22px;"></i>
         <span>INSYTE</span>
-        <span class="brand-badge">23ai</span>
       </div>
       <div class="brand-subtitle">E-Commerce Behaviour Analytics</div>
     </div>
@@ -67,7 +66,7 @@
     <div class="sidebar-footer">
       <div class="db-status-pill">
         <div class="status-dot" id="dbStatusDot"></div>
-        <span id="dbStatusText">Oracle 23ai Free : FREEPDB1</span>
+        <span id="dbStatusText">Connected : OCI Serverless</span>
       </div>
     </div>
   </aside>
@@ -149,7 +148,7 @@
             <div class="card-header">
               <div>
                 <div class="card-title">Monthly Net Revenue Trajectory</div>
-                <div class="card-subtitle">Aggregated via Oracle SQL Date Functions</div>
+                <div class="card-subtitle">Aggregated via SQL Date Functions</div>
               </div>
             </div>
             <div class="chart-container">
@@ -188,7 +187,7 @@
             <div class="card-header">
               <div>
                 <div class="card-title">Factual SQL Insights</div>
-                <div class="card-subtitle">Strictly derived from Oracle aggregations</div>
+                <div class="card-subtitle">Strictly derived from aggregations</div>
               </div>
             </div>
             <div id="factualInsightsList" style="display: flex; flex-direction: column; gap: 12px; margin-top: 8px;">
@@ -307,7 +306,7 @@
           <div class="kpi-card">
             <div class="kpi-label">Active Catalog SKUs</div>
             <div class="kpi-value">4,070</div>
-            <div class="kpi-subtext">With Oracle JSON metadata</div>
+            <div class="kpi-subtext">With JSON metadata</div>
           </div>
           <div class="kpi-card">
             <div class="kpi-label">SKUs Sold</div>
@@ -322,7 +321,7 @@
           <div class="kpi-card">
             <div class="kpi-label">Vector Embeddings</div>
             <div class="kpi-value">384-d</div>
-            <div class="kpi-subtext">Stored in Oracle VECTOR column</div>
+            <div class="kpi-subtext">Stored in VECTOR column</div>
           </div>
         </div>
 
@@ -575,7 +574,7 @@
           <div class="card-header">
             <div>
               <div class="card-title">Commercial Product Health Matrix</div>
-              <div class="card-subtitle">Classified natively in Oracle via V_PRODUCT_HEALTH_MATRIX</div>
+              <div class="card-subtitle">Classified natively in via V_PRODUCT_HEALTH_MATRIX</div>
             </div>
             <select class="filter-select" id="healthStatusSelect">
               <option value="ALL">All Health Tiers</option>
@@ -613,7 +612,7 @@
           <div class="card-header">
             <div>
               <div class="card-title">Academic Evaluation & Viva Console</div>
-              <div class="card-subtitle">Examines live Oracle 23ai queries, EXPLAIN PLAN execution trees, and schema data dictionary</div>
+              <div class="card-subtitle">Examines live queries, EXPLAIN PLAN execution trees, and schema data dictionary</div>
             </div>
             <div style="display: flex; gap: 8px;">
               <button class="filter-select" id="dictTablesBtn">Data Dictionary (Tables)</button>
@@ -649,7 +648,7 @@
             <div class="card-title" style="font-size: 0.85rem; margin-top: 14px;">SQL Source Code:</div>
             <pre class="code-block-box" id="sqlCodeBlock"></pre>
 
-            <div class="card-title" style="font-size: 0.85rem; margin-top: 14px;">Oracle EXPLAIN PLAN Execution Tree:</div>
+            <div class="card-title" style="font-size: 0.85rem; margin-top: 14px;">EXPLAIN PLAN Execution Tree:</div>
             <pre class="code-block-box" id="sqlExplainBlock" style="color: #38bdf8;"></pre>
           </div>
         </div>
@@ -664,7 +663,7 @@
   <div class="card" style="width: 720px; max-height: 85vh; overflow-y: auto; position: relative;">
     <div class="card-header">
       <div>
-        <div class="card-title">Oracle 23ai AI Vector Search Results</div>
+        <div class="card-title">AI Vector Search Results</div>
         <div class="card-subtitle" id="vectorSearchSubtitle">Top semantic matches via VECTOR_DISTANCE(embedding, query, COSINE)</div>
       </div>
       <button id="closeVectorModalBtn" class="filter-select" style="padding: 4px 10px;">Close ✕</button>

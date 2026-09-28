@@ -7,6 +7,7 @@ Includes query orchestration, explain plan generation, and fallback demonstratio
 import time
 import logging
 from contextlib import contextmanager
+import oracledb
 from app.config import Config
 
 logger = logging.getLogger(__name__)
@@ -25,6 +26,21 @@ def init_pool():
             "increment": Config.DB_POOL_INCREMENT
         }
         import os
+        
+        # Vercel Serverless Wallet Hydration
+        wallet_b64 = os.getenv("WALLET_BASE64")
+        if wallet_b64:
+            import base64, zipfile
+            tmp_wallet_dir = "/tmp/wallet"
+            if not os.path.exists(tmp_wallet_dir):
+                os.makedirs(tmp_wallet_dir, exist_ok=True)
+                zip_path = "/tmp/wallet.zip"
+                with open(zip_path, "wb") as f:
+                    f.write(base64.b64decode(wallet_b64))
+                with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+                    zip_ref.extractall(tmp_wallet_dir)
+            Config.WALLET_DIR = tmp_wallet_dir
+
         if Config.WALLET_DIR and os.path.exists(Config.WALLET_DIR):
             pool_kwargs["dsn"] = Config.TNS_NAME
             pool_kwargs["config_dir"] = Config.WALLET_DIR

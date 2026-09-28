@@ -77,15 +77,15 @@ function initGlobalSearch() {
 
       if (vectorMode) {
         modal.style.display = "flex";
-        resultsContainer.innerHTML = "<div style='color:var(--text-muted); padding:20px; text-align:center;'>Executing 384-dimensional Oracle Vector Search...</div>";
-        modalSubtitle.textContent = `Query: "${query}" via Oracle VECTOR_DISTANCE(embedding, :vec, COSINE)`;
+        resultsContainer.innerHTML = "<div style='color:var(--text-muted); padding:20px; text-align:center;'>Executing 384-dimensional Vector Search...</div>";
+        modalSubtitle.textContent = `Query: "${query}" via VECTOR_DISTANCE(embedding, :vec, COSINE)`;
 
         try {
           const res = await fetch(`/api/search/semantic?q=${encodeURIComponent(query)}`);
           const items = await res.json();
           renderVectorResults(items, resultsContainer);
         } catch (err) {
-          resultsContainer.innerHTML = `<div style='color:var(--status-at-risk);'>Error querying Oracle Vector: ${err}</div>`;
+          resultsContainer.innerHTML = `<div style='color:var(--status-at-risk);'>Error querying Vector: ${err}</div>`;
         }
       }
     }
@@ -344,7 +344,7 @@ async function loadProductCatalog(sortBy = "revenue") {
 window.showProductJson = async function(stockCode) {
   const res = await fetch(`/api/products/${stockCode}`);
   const data = await res.json();
-  alert(`Oracle JSON Metadata for [${stockCode}]:\n` + JSON.stringify(data.metadata_json, null, 2));
+  alert(`JSON Metadata for [${stockCode}]:\n` + JSON.stringify(data.metadata_json, null, 2));
 };
 
 // -----------------------------------------------------------------------------
@@ -597,5 +597,5 @@ async function loadQueryDetails(queryId) {
 async function showDataDictionary(category) {
   const res = await fetch(`/api/sql/dictionary/${category}`);
   const data = await res.json();
-  alert(`Oracle 23ai Data Dictionary [${category.toUpperCase()}]:\n` + JSON.stringify(data, null, 2));
+  alert(`23ai Data Dictionary [${category.toUpperCase()}]:\n` + JSON.stringify(data, null, 2));
 }
