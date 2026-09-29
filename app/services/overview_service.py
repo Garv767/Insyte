@@ -160,5 +160,5 @@ def get_factual_insights():
         {"icon": "repeat", "text": "71.8% of known customers placed repeat orders, driving 89.2% of monetary volume."},
         {"icon": "award", "text": "Top product '85123A' generated £182,450 across 54,200 units with a 1.2% return rate."},
         {"icon": "trending-up", "text": "Q4 holiday sales surge represented 36.8% of annual transaction revenue."},
-        {"icon": "shield-check", "text": "Cancellation auditing filtered 7.7% of negative adjustments into separate audit logs."}
+        {"icon": "shield", "text": "Cancellation auditing filtered 7.7% of negative adjustments into separate audit logs."}
     ]

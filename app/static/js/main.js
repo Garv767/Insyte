@@ -107,7 +107,7 @@ function renderVectorResults(items, container) {
       <div>
         <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
           <span style="font-weight:700; color:var(--accent-green-light); font-size:0.85rem;">#${idx+1} [${item.stock_code}]</span>
-          <span style="font-weight:600; color:#fff;">${item.description}</span>
+          <span style="font-weight:600; color:var(--text-primary);">${item.description}</span>
         </div>
         <div style="font-size:0.78rem; color:var(--text-muted); display:flex; gap:16px;">
           <span>Price: £${item.unit_price.toFixed(2)}</span>
@@ -277,7 +277,7 @@ async function loadCustomerModule() {
     const segTable = document.querySelector("#rfmSegmentTable tbody");
     segTable.innerHTML = segments.map(s => `
       <tr>
-        <td style="font-weight:600; color:#fff;">${s.rfm_segment}</td>
+        <td style="font-weight:600; color:var(--text-primary);">${s.rfm_segment}</td>
         <td>${s.customer_count.toLocaleString()}</td>
         <td>${s.customer_pct}%</td>
         <td style="color:var(--accent-green-light); font-weight:600;">£${s.total_revenue.toLocaleString()}</td>
@@ -302,7 +302,7 @@ async function loadCustomerRegistry(segment = "ALL") {
   const table = document.querySelector("#customerRegistryTable tbody");
   table.innerHTML = customers.map(c => `
     <tr>
-      <td style="font-family: var(--font-mono); color: #fff; font-weight: 500;">${c.customer_id}</td>
+      <td style="font-family: var(--font-mono); color: var(--text-primary); font-weight: 500;">${c.customer_id}</td>
       <td>${c.country}</td>
       <td>${c.recency_days} days ago</td>
       <td>${c.frequency_orders}</td>
@@ -329,7 +329,7 @@ async function loadProductCatalog(sortBy = "revenue") {
   const table = document.querySelector("#productCatalogTable tbody");
   table.innerHTML = products.map(p => `
     <tr>
-      <td style="font-family: var(--font-mono); color: #fff;">${p.stock_code}</td>
+      <td style="font-family: var(--font-mono); color: var(--text-primary);">${p.stock_code}</td>
       <td style="max-width: 280px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${p.description}</td>
       <td>£${p.unit_price.toFixed(2)}</td>
       <td style="color:var(--accent-green-light); font-weight:600;">£${p.revenue.toLocaleString()}</td>
@@ -407,7 +407,7 @@ async function loadSalesModule() {
   const cohortTable = document.querySelector("#cohortMatrixTable tbody");
   cohortTable.innerHTML = cohorts.map(c => `
     <tr>
-      <td style="font-weight:600; color:#fff;">${c.cohort_month}</td>
+      <td style="font-weight:600; color:var(--text-primary);">${c.cohort_month}</td>
       <td>${c.cohort_size}</td>
       <td style="background: rgba(16, 185, 129, 0.4); text-align:center;">100%</td>
       <td style="background: rgba(16, 185, 129, ${c.m1_retention_pct ? c.m1_retention_pct/100 : 0}); text-align:center;">${c.m1_retention_pct ? c.m1_retention_pct + '%' : '-'}</td>
@@ -499,7 +499,7 @@ async function loadReviewExplorer(sentiment = "ALL") {
   table.innerHTML = reviews.map(r => `
     <tr>
       <td style="font-family: var(--font-mono);">${r.review_id}</td>
-      <td style="font-weight:500; color:#fff;">${r.product_name}</td>
+      <td style="font-weight:500; color:var(--text-primary);">${r.product_name}</td>
       <td>★ ${r.rating}</td>
       <td><span class="badge ${r.sentiment === 'POSITIVE' ? 'badge-healthy' : (r.sentiment === 'NEGATIVE' ? 'badge-at-risk' : 'badge-watch')}">${r.sentiment}</span></td>
       <td style="max-width:320px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${r.review_text}</td>
@@ -525,8 +525,8 @@ async function loadHealthMatrix(status = "ALL") {
   const table = document.querySelector("#healthMatrixTable tbody");
   table.innerHTML = matrix.map(m => `
     <tr>
-      <td style="font-family: var(--font-mono); color:#fff;">${m.stock_code}</td>
-      <td style="font-weight:500; color:#fff;">${m.description}</td>
+      <td style="font-family: var(--font-mono); color:var(--text-primary);">${m.stock_code}</td>
+      <td style="font-weight:500; color:var(--text-primary);">${m.description}</td>
       <td>£${m.unit_price.toFixed(2)}</td>
       <td style="color:var(--accent-green-light); font-weight:600;">£${m.revenue.toLocaleString()}</td>
       <td>${m.units_sold.toLocaleString()}</td>
@@ -548,7 +548,7 @@ async function loadSqlInsightsModule() {
 
   list.innerHTML = catalog.map(item => `
     <button class="sql-item-btn" data-qid="${item.id}">
-      <div style="font-weight:600; color:#fff;">${item.title}</div>
+      <div style="font-weight:600; color:var(--text-primary);">${item.title}</div>
       <div style="font-size:0.7rem; color:var(--accent-green-light);">${item.category}</div>
     </button>
   `).join("");
