@@ -10,7 +10,6 @@ document.addEventListener("DOMContentLoaded", () => {
   loadOverviewModule();
   loadCustomerModule();
   loadProductModule();
-  loadSalesModule();
   loadReviewModule();
   loadHealthModule();
   loadSqlInsightsModule();
@@ -28,7 +27,6 @@ function initNavigation() {
     overview: "Overview",
     customers: "Customer Analytics & RFM",
     products: "Product Analytics & Catalog",
-    sales: "Sales Trends & Cohort Retention",
     reviews: "Reviews & Media Intelligence",
     health: "Commercial Product Health",
     sql: "SQL Insights & Academic Console"
@@ -376,90 +374,6 @@ window.showProductJson = async function(stockCode) {
   const data = await res.json();
   alert(`JSON Metadata for [${stockCode}]:\n` + JSON.stringify(data.metadata_json, null, 2));
 };
-
-// -----------------------------------------------------------------------------
-// 6. Module 4: Sales & Trends
-// -----------------------------------------------------------------------------
-async function loadSalesModule() {
-  try {
-    const kpiRes = await fetch("/api/sales/overview");
-    const kpis = await kpiRes.json();
-    document.getElementById("kpiSalesGross").textContent = "£" + (kpis.annual_gross_sales || 0).toLocaleString();
-    document.getElementById("kpiSalesReturns").textContent = "£" + (kpis.annual_returns || 0).toLocaleString();
-    document.getElementById("kpiSalesNet").textContent = "£" + (kpis.annual_net_revenue || 0).toLocaleString();
-    document.getElementById("kpiSalesAov").textContent = "£" + (kpis.overall_aov || 0).toFixed(2);
-  } catch(err) {
-    console.error("Error loading sales KPIs:", err);
-  }
-
-  // 1. Gross vs Net Breakdown Chart
-  const trendsRes = await fetch("/api/sales/trends");
-  const trends = await trendsRes.json();
-  const ctxGross = document.getElementById("salesGrossNetChart").getContext("2d");
-  new Chart(ctxGross, {
-    type: "bar",
-    data: {
-      labels: trends.map(t => t.period_label),
-      datasets: [
-        { label: "Net Revenue (£)", data: trends.map(t => t.net_revenue), backgroundColor: "#10b981" },
-        { label: "Returns / Cancels (£)", data: trends.map(t => t.returns), backgroundColor: "#ef4444" }
-      ]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      scales: {
-        x: { grid: { display: false }, ticks: { color: "#6b7280" } },
-        y: { grid: { color: "rgba(255,255,255,0.04)" }, ticks: { color: "#6b7280", callback: v => "£" + (v/1000) + "k" } }
-      }
-    }
-  });
-
-  // 2. AOV Trend Chart
-  const aovRes = await fetch("/api/sales/aov");
-  const aovData = await aovRes.json();
-  const ctxAov = document.getElementById("salesAovChart").getContext("2d");
-  new Chart(ctxAov, {
-    type: "line",
-    data: {
-      labels: aovData.map(a => a.period),
-      datasets: [{
-        label: "Average Order Value (£)",
-        data: aovData.map(a => a.aov),
-        borderColor: "#38bdf8",
-        borderWidth: 2,
-        tension: 0.3,
-        pointRadius: 3
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      scales: {
-        x: { grid: { display: false }, ticks: { color: "#6b7280" } },
-        y: { min: 190, max: 215, grid: { color: "rgba(255,255,255,0.04)" }, ticks: { color: "#6b7280", callback: v => "£" + v } }
-      }
-    }
-  });
-
-  // 3. Cohort Retention Matrix
-  const cohortRes = await fetch("/api/sales/cohorts");
-  const cohorts = await cohortRes.json();
-  const cohortTable = document.querySelector("#cohortMatrixTable tbody");
-  cohortTable.innerHTML = cohorts.map(c => `
-    <tr>
-      <td style="font-weight:600; color:var(--text-primary);">${c.cohort_month}</td>
-      <td>${c.cohort_size}</td>
-      <td style="background: rgba(16, 185, 129, 0.4); text-align:center;">100%</td>
-      <td style="background: rgba(16, 185, 129, ${c.m1_retention_pct ? c.m1_retention_pct/100 : 0}); text-align:center;">${c.m1_retention_pct ? c.m1_retention_pct + '%' : '-'}</td>
-      <td style="background: rgba(16, 185, 129, ${c.m2_retention_pct ? c.m2_retention_pct/100 : 0}); text-align:center;">${c.m2_retention_pct ? c.m2_retention_pct + '%' : '-'}</td>
-      <td style="background: rgba(16, 185, 129, ${c.m3_retention_pct ? c.m3_retention_pct/100 : 0}); text-align:center;">${c.m3_retention_pct ? c.m3_retention_pct + '%' : '-'}</td>
-      <td style="background: rgba(16, 185, 129, ${c.m4_retention_pct ? c.m4_retention_pct/100 : 0}); text-align:center;">${c.m4_retention_pct ? c.m4_retention_pct + '%' : '-'}</td>
-      <td style="background: rgba(16, 185, 129, ${c.m5_retention_pct ? c.m5_retention_pct/100 : 0}); text-align:center;">${c.m5_retention_pct ? c.m5_retention_pct + '%' : '-'}</td>
-      <td style="background: rgba(16, 185, 129, ${c.m6_retention_pct ? c.m6_retention_pct/100 : 0}); text-align:center;">${c.m6_retention_pct ? c.m6_retention_pct + '%' : '-'}</td>
-    </tr>
-  `).join("");
-}
 
 // -----------------------------------------------------------------------------
 // 7. Module 5: Reviews & Media

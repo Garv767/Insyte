@@ -45,10 +45,7 @@
         <i data-feather="package" class="nav-icon"></i>
         <span>Product Analytics</span>
       </li>
-      <li class="nav-item" data-tab="sales">
-        <i data-feather="trending-up" class="nav-icon"></i>
-        <span>Sales & Trends</span>
-      </li>
+
       <li class="nav-item" data-tab="reviews">
         <i data-feather="message-square" class="nav-icon"></i>
         <span>Reviews & Media</span>
@@ -342,87 +339,7 @@
         </div>
       </section>
 
-      <!-- ============================================================== -->
-      <!-- MODULE 4: SALES & TRENDS -->
-      <!-- ============================================================== -->
-      <section id="tab-sales" class="tab-content">
-        <div class="kpi-grid">
-          <div class="kpi-card">
-            <div class="kpi-label">Gross Dispatched Value</div>
-            <div class="kpi-value" id="kpiSalesGross">-</div>
-            <div class="kpi-subtext">Excludes cancelled items</div>
-          </div>
-          <div class="kpi-card">
-            <div class="kpi-label">Return Adjustments</div>
-            <div class="kpi-value" id="kpiSalesReturns">-</div>
-            <div class="kpi-subtext">Archived in TRANSACTION_ADJUSTMENTS</div>
-          </div>
-          <div class="kpi-card">
-            <div class="kpi-label">Net Sales Realized</div>
-            <div class="kpi-value" id="kpiSalesNet">-</div>
-            <div class="kpi-subtext">Reconciled financial balance</div>
-          </div>
-          <div class="kpi-card">
-            <div class="kpi-label">Overall AOV</div>
-            <div class="kpi-value" id="kpiSalesAov">-</div>
-            <div class="kpi-subtext">Stable ±2.4% throughout year</div>
-          </div>
-        </div>
 
-        <div class="grid-equal">
-          <div class="card">
-            <div class="card-header">
-              <div>
-                <div class="card-title">Gross vs Return Financial Breakdown</div>
-                <div class="card-subtitle">Monthly transaction adjustment separation</div>
-              </div>
-            </div>
-            <div class="chart-container">
-              <canvas id="salesGrossNetChart"></canvas>
-            </div>
-          </div>
-
-          <div class="card">
-            <div class="card-header">
-              <div>
-                <div class="card-title">AOV Trend Trajectory</div>
-                <div class="card-subtitle">Monthly basket value consistency</div>
-              </div>
-            </div>
-            <div class="chart-container">
-              <canvas id="salesAovChart"></canvas>
-            </div>
-          </div>
-        </div>
-
-        <!-- Cohort Retention Matrix Table -->
-        <div class="card">
-          <div class="card-header">
-            <div>
-              <div class="card-title">Customer Cohort Retention Matrix</div>
-              <div class="card-subtitle">Computed via MIN() OVER & MONTHS_BETWEEN</div>
-            </div>
-          </div>
-          <div class="table-responsive">
-            <table class="data-table" id="cohortMatrixTable">
-              <thead>
-                <tr>
-                  <th>Cohort Month</th>
-                  <th>Size</th>
-                  <th>Month 0</th>
-                  <th>Month 1</th>
-                  <th>Month 2</th>
-                  <th>Month 3</th>
-                  <th>Month 4</th>
-                  <th>Month 5</th>
-                  <th>Month 6</th>
-                </tr>
-              </thead>
-              <tbody></tbody>
-            </table>
-          </div>
-        </div>
-      </section>
 
       <!-- ============================================================== -->
       <!-- MODULE 5: REVIEWS & MEDIA -->
