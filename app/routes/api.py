@@ -40,16 +40,16 @@ def overview_kpis():
 @api_bp.route("/overview/trends")
 def overview_trends():
     granularity = request.args.get("granularity", "MONTH")
-    return jsonify(overview_service.get_revenue_trends(granularity))
+    return jsonify(overview_service.get_review_trends(granularity))
 
 @api_bp.route("/overview/top-products")
 def overview_top_products():
     limit = int(request.args.get("limit", 8))
     return jsonify(overview_service.get_top_products(limit))
 
-@api_bp.route("/overview/countries")
-def overview_countries():
-    return jsonify(overview_service.get_country_performance())
+@api_bp.route("/overview/categories")
+def overview_categories():
+    return jsonify(overview_service.get_category_performance())
 
 @api_bp.route("/overview/insights")
 def overview_insights():

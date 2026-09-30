@@ -128,7 +128,16 @@ function renderVectorResults(items, container) {
 // -----------------------------------------------------------------------------
 async function loadOverviewModule() {
   try {
-    // 1. Revenue Trends Chart
+    // 0. Top KPIs
+    const kpiRes = await fetch("/api/overview/kpis");
+    const kpis = await kpiRes.json();
+    document.getElementById("kpiCustomers").textContent = kpis.total_customers.toLocaleString();
+    document.getElementById("kpiProducts").textContent = kpis.total_products.toLocaleString();
+    document.getElementById("kpiReviews").textContent = kpis.total_reviews.toLocaleString();
+    document.getElementById("kpiRating").textContent = kpis.avg_rating.toFixed(2) + " ★";
+    document.getElementById("kpiVerified").textContent = kpis.verified_rate.toFixed(1) + "%";
+
+    // 1. Review Trends Chart
     const trendsRes = await fetch("/api/overview/trends");
     const trends = await trendsRes.json();
     renderOverviewRevenueChart(trends);
@@ -138,10 +147,10 @@ async function loadOverviewModule() {
     const segments = await segRes.json();
     renderOverviewSegmentChart(segments);
 
-    // 3. Country Performance Chart
-    const countryRes = await fetch("/api/overview/countries");
-    const countries = await countryRes.json();
-    renderOverviewCountryChart(countries);
+    // 3. Category Performance Chart
+    const categoryRes = await fetch("/api/overview/categories");
+    const categories = await categoryRes.json();
+    renderOverviewCountryChart(categories);
 
     // 4. Factual Insights List
     const insRes = await fetch("/api/overview/insights");
@@ -164,14 +173,15 @@ async function loadOverviewModule() {
 
 function renderOverviewRevenueChart(data) {
   const ctx = document.getElementById("overviewRevenueChart").getContext("2d");
-  new Chart(ctx, {
+  if(window.overviewRevenueChartInstance) window.overviewRevenueChartInstance.destroy();
+  window.overviewRevenueChartInstance = new Chart(ctx, {
     type: "line",
     data: {
       labels: data.map(d => d.period_label),
       datasets: [
         {
-          label: "Net Revenue (£)",
-          data: data.map(d => d.net_revenue),
+          label: "Total Reviews",
+          data: data.map(d => d.total_reviews),
           borderColor: "#10b981",
           backgroundColor: "rgba(16, 185, 129, 0.12)",
           fill: true,
@@ -180,10 +190,9 @@ function renderOverviewRevenueChart(data) {
           pointRadius: 3
         },
         {
-          label: "Gross Sales (£)",
-          data: data.map(d => d.gross_sales),
-          borderColor: "rgba(255, 255, 255, 0.3)",
-          borderDash: [4, 4],
+          label: "Verified Reviews",
+          data: data.map(d => d.verified_reviews),
+          borderColor: "rgba(56, 189, 248, 0.5)",
           borderWidth: 1.5,
           pointRadius: 0,
           fill: false
@@ -199,7 +208,7 @@ function renderOverviewRevenueChart(data) {
       },
       scales: {
         x: { grid: { color: "rgba(255,255,255,0.04)" }, ticks: { color: "#6b7280" } },
-        y: { grid: { color: "rgba(255,255,255,0.04)" }, ticks: { color: "#6b7280", callback: v => "£" + (v/1000) + "k" } }
+        y: { grid: { color: "rgba(255,255,255,0.04)" }, ticks: { color: "#6b7280" } }
       }
     }
   });
@@ -207,12 +216,13 @@ function renderOverviewRevenueChart(data) {
 
 function renderOverviewSegmentChart(data) {
   const ctx = document.getElementById("overviewSegmentChart").getContext("2d");
-  new Chart(ctx, {
+  if(window.overviewSegmentChartInstance) window.overviewSegmentChartInstance.destroy();
+  window.overviewSegmentChartInstance = new Chart(ctx, {
     type: "doughnut",
     data: {
       labels: data.map(d => d.rfm_segment),
       datasets: [{
-        data: data.map(d => d.total_revenue),
+        data: data.map(d => d.customer_count),
         backgroundColor: ["#10b981", "#3b82f6", "#8b5cf6", "#f59e0b", "#ef4444", "#6b7280"],
         borderWidth: 0
       }]
@@ -229,13 +239,14 @@ function renderOverviewSegmentChart(data) {
 
 function renderOverviewCountryChart(data) {
   const ctx = document.getElementById("overviewCountryChart").getContext("2d");
-  new Chart(ctx, {
+  if(window.overviewCountryChartInstance) window.overviewCountryChartInstance.destroy();
+  window.overviewCountryChartInstance = new Chart(ctx, {
     type: "bar",
     data: {
-      labels: data.map(d => d.country),
+      labels: data.map(d => d.category),
       datasets: [{
-        label: "Revenue (£)",
-        data: data.map(d => d.total_revenue),
+        label: "Product Count",
+        data: data.map(d => d.product_count),
         backgroundColor: "#10b981",
         borderRadius: 4
       }]
@@ -246,7 +257,7 @@ function renderOverviewCountryChart(data) {
       plugins: { legend: { display: false } },
       scales: {
         x: { grid: { display: false }, ticks: { color: "#6b7280" } },
-        y: { grid: { color: "rgba(255,255,255,0.04)" }, ticks: { color: "#6b7280", callback: v => "£" + (v/1000000).toFixed(1) + "M" } }
+        y: { grid: { color: "rgba(255,255,255,0.04)" }, ticks: { color: "#6b7280" } }
       }
     }
   });

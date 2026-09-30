@@ -116,29 +116,29 @@
         <!-- Top KPI Cards -->
         <div class="kpi-grid">
           <div class="kpi-card">
-            <div class="kpi-label">Net Total Revenue</div>
-            <div class="kpi-value" id="kpiNetRev">£9,729,930</div>
-            <div class="kpi-subtext"><i data-feather="arrow-up-right" style="width:14px;"></i> Gross: £10.54M (Net +8.4%)</div>
-          </div>
-          <div class="kpi-card">
-            <div class="kpi-label">Total Valid Orders</div>
-            <div class="kpi-value" id="kpiOrders">44,820</div>
-            <div class="kpi-subtext"><i data-feather="check-circle" style="width:14px;"></i> Excludes 3,410 cancellations</div>
-          </div>
-          <div class="kpi-card">
             <div class="kpi-label">Total Customers</div>
-            <div class="kpi-value" id="kpiCustomers">5,878</div>
-            <div class="kpi-subtext"><i data-feather="user-check" style="width:14px;"></i> 71.8% Repeat buyer rate</div>
+            <div class="kpi-value" id="kpiCustomers">74,286</div>
+            <div class="kpi-subtext"><i data-feather="users" style="width:14px;"></i> Unique user identities</div>
           </div>
           <div class="kpi-card">
-            <div class="kpi-label">Average Order Value</div>
-            <div class="kpi-value" id="kpiAov">£217.09</div>
-            <div class="kpi-subtext"><i data-feather="shopping-bag" style="width:14px;"></i> 21.9 items per transaction</div>
+            <div class="kpi-label">Total Products</div>
+            <div class="kpi-value" id="kpiProducts">5,885</div>
+            <div class="kpi-subtext"><i data-feather="package" style="width:14px;"></i> Appliances category SKUs</div>
           </div>
           <div class="kpi-card">
-            <div class="kpi-label">Units Dispatched</div>
-            <div class="kpi-value" id="kpiUnits">984,520</div>
-            <div class="kpi-subtext"><i data-feather="package" style="width:14px;"></i> Catalog: 4,070 active SKUs</div>
+            <div class="kpi-label">Total Reviews</div>
+            <div class="kpi-value" id="kpiReviews">75,000</div>
+            <div class="kpi-subtext"><i data-feather="message-square" style="width:14px;"></i> Text and media evaluations</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Average Rating</div>
+            <div class="kpi-value" id="kpiRating">4.15 ★</div>
+            <div class="kpi-subtext"><i data-feather="star" style="width:14px;"></i> Across all verified and unverified</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Verified Review Rate</div>
+            <div class="kpi-value" id="kpiVerified">88.2%</div>
+            <div class="kpi-subtext"><i data-feather="check-circle" style="width:14px;"></i> Officially verified purchases</div>
           </div>
         </div>
 
@@ -147,7 +147,7 @@
           <div class="card">
             <div class="card-header">
               <div>
-                <div class="card-title">Monthly Net Revenue Trajectory</div>
+                <div class="card-title">Monthly Review Volume Trajectory</div>
                 <div class="card-subtitle">Aggregated via SQL Date Functions</div>
               </div>
             </div>
@@ -174,8 +174,8 @@
           <div class="card">
             <div class="card-header">
               <div>
-                <div class="card-title">Top 7 Geographic Markets by Revenue</div>
-                <div class="card-subtitle">Cross-border customer transactions</div>
+                <div class="card-title">Top 7 Product Categories</div>
+                <div class="card-subtitle">Grouped by primary category</div>
               </div>
             </div>
             <div class="chart-container">
