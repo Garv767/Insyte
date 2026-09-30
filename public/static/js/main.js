@@ -268,6 +268,14 @@ function renderOverviewCountryChart(data) {
 // -----------------------------------------------------------------------------
 async function loadCustomerModule() {
   try {
+    // 0. Customer KPIs
+    const kpiRes = await fetch("/api/customers/kpis");
+    const kpis = await kpiRes.json();
+    document.getElementById("kpiCustTotal").textContent = kpis.total_customers?.toLocaleString() || "0";
+    document.getElementById("kpiCustRepeat").textContent = kpis.multi_review_customers?.toLocaleString() || "0";
+    document.getElementById("kpiCustAvgRating").textContent = (kpis.avg_rating_given || 0).toFixed(2) + " ★";
+    document.getElementById("kpiCustChampions").textContent = kpis.champion_count?.toLocaleString() || "0";
+
     // 1. RFM Heatmap
     const heatRes = await fetch("/api/customers/rfm-heatmap");
     const heatData = await heatRes.json();
@@ -317,7 +325,7 @@ async function loadCustomerRegistry(segment = "ALL") {
       <td>${c.country}</td>
       <td>${c.recency_days} days ago</td>
       <td>${c.frequency_orders}</td>
-      <td style="color:var(--accent-green-light); font-weight:600;">£${c.monetary_spend.toLocaleString()}</td>
+      <td style="color:var(--accent-green-light); font-weight:600;">£${(c.monetary_spend || 0).toLocaleString()}</td>
       <td style="font-family: var(--font-mono);">${c.r_score}${c.f_score}${c.m_score}</td>
       <td><span class="badge ${c.rfm_segment === 'Champions' ? 'badge-healthy' : (c.rfm_segment === 'At Risk' ? 'badge-at-risk' : 'badge-watch')}">${c.rfm_segment}</span></td>
     </tr>
@@ -328,6 +336,17 @@ async function loadCustomerRegistry(segment = "ALL") {
 // 5. Module 3: Product Analytics
 // -----------------------------------------------------------------------------
 async function loadProductModule() {
+  try {
+    const kpiRes = await fetch("/api/products/kpis");
+    const kpis = await kpiRes.json();
+    document.getElementById("kpiProdTotal").textContent = kpis.total_products?.toLocaleString() || "0";
+    document.getElementById("kpiProdAvgRating").textContent = (kpis.avg_catalog_rating || 0).toFixed(2) + " ★";
+    document.getElementById("kpiProdAvgPrice").textContent = "£" + (kpis.avg_price || 0).toFixed(2);
+    document.getElementById("kpiProdHealthy").textContent = kpis.healthy_count?.toLocaleString() || "0";
+  } catch (err) {
+    console.error("Error loading product KPIs:", err);
+  }
+
   loadProductCatalog();
   document.getElementById("productSortSelect").addEventListener("change", (e) => {
     loadProductCatalog(e.target.value);
@@ -342,11 +361,11 @@ async function loadProductCatalog(sortBy = "revenue") {
     <tr>
       <td style="font-family: var(--font-mono); color: var(--text-primary);">${p.stock_code}</td>
       <td style="max-width: 280px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${p.description}</td>
-      <td>£${p.unit_price.toFixed(2)}</td>
-      <td style="color:var(--accent-green-light); font-weight:600;">£${p.revenue.toLocaleString()}</td>
-      <td>${p.units_sold.toLocaleString()}</td>
-      <td>${p.order_count.toLocaleString()}</td>
-      <td>★ ${p.avg_rating} (${p.review_count})</td>
+      <td>£${(p.unit_price || 0).toFixed(2)}</td>
+      <td style="color:var(--accent-green-light); font-weight:600;">${(p.review_count || 0).toLocaleString()}</td>
+      <td>${(p.total_helpful_votes || 0).toLocaleString()}</td>
+      <td>${p.negative_pct}%</td>
+      <td>★ ${p.avg_review_rating}</td>
       <td><button class="filter-select" style="padding: 3px 8px; font-size: 0.72rem;" onclick="showProductJson('${p.stock_code}')">Inspect JSON</button></td>
     </tr>
   `).join("");
@@ -362,6 +381,17 @@ window.showProductJson = async function(stockCode) {
 // 6. Module 4: Sales & Trends
 // -----------------------------------------------------------------------------
 async function loadSalesModule() {
+  try {
+    const kpiRes = await fetch("/api/sales/overview");
+    const kpis = await kpiRes.json();
+    document.getElementById("kpiSalesGross").textContent = "£" + (kpis.annual_gross_sales || 0).toLocaleString();
+    document.getElementById("kpiSalesReturns").textContent = "£" + (kpis.annual_returns || 0).toLocaleString();
+    document.getElementById("kpiSalesNet").textContent = "£" + (kpis.annual_net_revenue || 0).toLocaleString();
+    document.getElementById("kpiSalesAov").textContent = "£" + (kpis.overall_aov || 0).toFixed(2);
+  } catch(err) {
+    console.error("Error loading sales KPIs:", err);
+  }
+
   // 1. Gross vs Net Breakdown Chart
   const trendsRes = await fetch("/api/overview/trends");
   const trends = await trendsRes.json();
@@ -435,6 +465,17 @@ async function loadSalesModule() {
 // 7. Module 5: Reviews & Media
 // -----------------------------------------------------------------------------
 async function loadReviewModule() {
+  try {
+    const kpiRes = await fetch("/api/reviews/kpis");
+    const kpis = await kpiRes.json();
+    document.getElementById("kpiRevTotal").textContent = kpis.total_reviews?.toLocaleString() || "0";
+    document.getElementById("kpiRevAvgRating").textContent = (kpis.avg_rating || 0).toFixed(2) + " ★";
+    document.getElementById("kpiRevMedia").textContent = kpis.media_reviews_count?.toLocaleString() || "0";
+    document.getElementById("kpiRevPositive").textContent = (kpis.positive_pct || 0) + "%";
+  } catch (err) {
+    console.error("Error loading review KPIs:", err);
+  }
+
   // 1. Rating Distribution Chart
   const rateRes = await fetch("/api/reviews/ratings");
   const ratings = await rateRes.json();
@@ -524,6 +565,17 @@ async function loadReviewExplorer(sentiment = "ALL") {
 // 8. Module 6: Commercial Product Health
 // -----------------------------------------------------------------------------
 async function loadHealthModule() {
+  try {
+    const kpiRes = await fetch("/api/health/summary");
+    const kpis = await kpiRes.json();
+    document.getElementById("kpiHealthTotal").textContent = kpis.total_monitored?.toLocaleString() || "0";
+    document.getElementById("kpiHealthHealthy").textContent = kpis.healthy_count?.toLocaleString() || "0";
+    document.getElementById("kpiHealthWatch").textContent = kpis.watch_count?.toLocaleString() || "0";
+    document.getElementById("kpiHealthRisk").textContent = kpis.at_risk_count?.toLocaleString() || "0";
+  } catch (err) {
+    console.error("Error loading health KPIs:", err);
+  }
+
   loadHealthMatrix();
   document.getElementById("healthStatusSelect").addEventListener("change", (e) => {
     loadHealthMatrix(e.target.value);
@@ -538,13 +590,12 @@ async function loadHealthMatrix(status = "ALL") {
     <tr>
       <td style="font-family: var(--font-mono); color:var(--text-primary);">${m.stock_code}</td>
       <td style="font-weight:500; color:var(--text-primary);">${m.description}</td>
-      <td>£${m.unit_price.toFixed(2)}</td>
-      <td style="color:var(--accent-green-light); font-weight:600;">£${m.revenue.toLocaleString()}</td>
-      <td>${m.units_sold.toLocaleString()}</td>
-      <td style="color: ${m.return_rate_pct > 5 ? 'var(--status-at-risk)' : 'var(--text-secondary)'}; font-weight:600;">${m.return_rate_pct}%</td>
+      <td>£${(m.unit_price || 0).toFixed(2)}</td>
+      <td style="color:var(--accent-green-light); font-weight:600;">${(m.review_count || 0).toLocaleString()}</td>
+      <td>${(m.units_sold || 0).toLocaleString()}</td>
+      <td style="color: ${m.negative_pct > 25 ? 'var(--status-at-risk)' : 'var(--text-secondary)'}; font-weight:600;">${m.negative_pct}%</td>
       <td>★ ${m.avg_rating}</td>
       <td><span class="badge ${m.health_status === 'HEALTHY' ? 'badge-healthy' : (m.health_status === 'AT_RISK' ? 'badge-at-risk' : 'badge-watch')}">${m.health_status}</span></td>
-      <td style="font-size:0.78rem; color:var(--text-secondary);">${m.rationale || 'Normal commercial velocity'}</td>
     </tr>
   `).join("");
 }

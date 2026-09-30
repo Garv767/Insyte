@@ -203,24 +203,24 @@
       <section id="tab-customers" class="tab-content">
         <div class="kpi-grid">
           <div class="kpi-card">
-            <div class="kpi-label">Active Recent Shoppers</div>
-            <div class="kpi-value">3,240</div>
-            <div class="kpi-subtext">Transacted within last 60 days</div>
+            <div class="kpi-label">Total Customers</div>
+            <div class="kpi-value" id="kpiCustTotal">-</div>
+            <div class="kpi-subtext">Unique reviewers</div>
           </div>
           <div class="kpi-card">
-            <div class="kpi-label">Repeat Buyers</div>
-            <div class="kpi-value">4,220</div>
-            <div class="kpi-subtext">71.8% of identified customer portfolio</div>
+            <div class="kpi-label">Repeat Reviewers</div>
+            <div class="kpi-value" id="kpiCustRepeat">-</div>
+            <div class="kpi-subtext">Customers with >1 review</div>
           </div>
           <div class="kpi-card">
-            <div class="kpi-label">Avg Lifetime Value</div>
-            <div class="kpi-value">£1,655.31</div>
-            <div class="kpi-subtext">Across 7.6 avg orders per customer</div>
+            <div class="kpi-label">Avg Rating Given</div>
+            <div class="kpi-value" id="kpiCustAvgRating">-</div>
+            <div class="kpi-subtext">Overall sentiment</div>
           </div>
           <div class="kpi-card">
-            <div class="kpi-label">One-Time Buyers</div>
-            <div class="kpi-value">1,658</div>
-            <div class="kpi-subtext">Targets for reactivation campaign</div>
+            <div class="kpi-label">Champions</div>
+            <div class="kpi-value" id="kpiCustChampions">-</div>
+            <div class="kpi-subtext">Highest value segment</div>
           </div>
         </div>
 
@@ -304,24 +304,24 @@
       <section id="tab-products" class="tab-content">
         <div class="kpi-grid">
           <div class="kpi-card">
-            <div class="kpi-label">Active Catalog SKUs</div>
-            <div class="kpi-value">4,070</div>
-            <div class="kpi-subtext">With JSON metadata</div>
+            <div class="kpi-label">Total Products</div>
+            <div class="kpi-value" id="kpiProdTotal">-</div>
+            <div class="kpi-subtext">Catalog size</div>
           </div>
           <div class="kpi-card">
-            <div class="kpi-label">SKUs Sold</div>
-            <div class="kpi-value">3,840</div>
-            <div class="kpi-subtext">94.3% catalog velocity</div>
+            <div class="kpi-label">Avg Catalog Rating</div>
+            <div class="kpi-value" id="kpiProdAvgRating">-</div>
+            <div class="kpi-subtext">Mean rating across SKUs</div>
           </div>
           <div class="kpi-card">
             <div class="kpi-label">Avg Selling Price</div>
-            <div class="kpi-value">£4.65</div>
-            <div class="kpi-subtext">Across all completed line items</div>
+            <div class="kpi-value" id="kpiProdAvgPrice">-</div>
+            <div class="kpi-subtext">Across priced catalog</div>
           </div>
           <div class="kpi-card">
-            <div class="kpi-label">Vector Embeddings</div>
-            <div class="kpi-value">384-d</div>
-            <div class="kpi-subtext">Stored in VECTOR column</div>
+            <div class="kpi-label">Healthy Products</div>
+            <div class="kpi-value" id="kpiProdHealthy">-</div>
+            <div class="kpi-subtext">Strong rating, low negatives</div>
           </div>
         </div>
 
@@ -347,11 +347,10 @@
                   <th>Stock Code</th>
                   <th>Description</th>
                   <th>Unit Price</th>
-                  <th>Revenue</th>
-                  <th>Units Sold</th>
-                  <th>Orders</th>
+                  <th>Total Reviews</th>
+                  <th>Helpful Votes</th>
+                  <th>Negative %</th>
                   <th>Rating</th>
-                  <th>Action</th>
                 </tr>
               </thead>
               <tbody></tbody>
@@ -367,22 +366,22 @@
         <div class="kpi-grid">
           <div class="kpi-card">
             <div class="kpi-label">Gross Dispatched Value</div>
-            <div class="kpi-value">£10,542,380</div>
+            <div class="kpi-value" id="kpiSalesGross">-</div>
             <div class="kpi-subtext">Excludes cancelled items</div>
           </div>
           <div class="kpi-card">
             <div class="kpi-label">Return Adjustments</div>
-            <div class="kpi-value">£812,450</div>
+            <div class="kpi-value" id="kpiSalesReturns">-</div>
             <div class="kpi-subtext">Archived in TRANSACTION_ADJUSTMENTS</div>
           </div>
           <div class="kpi-card">
             <div class="kpi-label">Net Sales Realized</div>
-            <div class="kpi-value">£9,729,930</div>
+            <div class="kpi-value" id="kpiSalesNet">-</div>
             <div class="kpi-subtext">Reconciled financial balance</div>
           </div>
           <div class="kpi-card">
             <div class="kpi-label">Overall AOV</div>
-            <div class="kpi-value">£217.09</div>
+            <div class="kpi-value" id="kpiSalesAov">-</div>
             <div class="kpi-subtext">Stable ±2.4% throughout year</div>
           </div>
         </div>
@@ -449,23 +448,23 @@
         <div class="kpi-grid">
           <div class="kpi-card">
             <div class="kpi-label">Total Reviews</div>
-            <div class="kpi-value">3,480</div>
+            <div class="kpi-value" id="kpiRevTotal">-</div>
             <div class="kpi-subtext">Customer feedback submissions</div>
           </div>
           <div class="kpi-card">
             <div class="kpi-label">Average Star Rating</div>
-            <div class="kpi-value">4.38 / 5.0</div>
-            <div class="kpi-subtext">77.0% Positive sentiment</div>
+            <div class="kpi-value" id="kpiRevAvgRating">-</div>
+            <div class="kpi-subtext">Across all reviews</div>
           </div>
           <div class="kpi-card">
             <div class="kpi-label">Reviews with Media</div>
-            <div class="kpi-value">780</div>
-            <div class="kpi-subtext">22.4% Media attachment rate</div>
+            <div class="kpi-value" id="kpiRevMedia">-</div>
+            <div class="kpi-subtext">Photo and video attachments</div>
           </div>
           <div class="kpi-card">
-            <div class="kpi-label">Media Rating Uplift</div>
-            <div class="kpi-value">+0.31★</div>
-            <div class="kpi-subtext">4.62 vs 4.31 for text-only</div>
+            <div class="kpi-label">Positive Sentiment</div>
+            <div class="kpi-value" id="kpiRevPositive">-</div>
+            <div class="kpi-subtext">4 and 5 star reviews</div>
           </div>
         </div>
 
@@ -549,24 +548,24 @@
       <section id="tab-health" class="tab-content">
         <div class="kpi-grid">
           <div class="kpi-card">
-            <div class="kpi-label">Commercial Products Monitored</div>
-            <div class="kpi-value">3,840</div>
-            <div class="kpi-subtext">Tracked across sales & returns</div>
+            <div class="kpi-label">Products Monitored</div>
+            <div class="kpi-value" id="kpiHealthTotal">-</div>
+            <div class="kpi-subtext">Tracked across catalog</div>
           </div>
           <div class="kpi-card">
             <div class="kpi-label">Healthy Products</div>
-            <div class="kpi-value" style="color: var(--status-healthy);">3,120</div>
-            <div class="kpi-subtext">Low returns, steady velocity</div>
+            <div class="kpi-value" id="kpiHealthHealthy" style="color: var(--status-healthy);">-</div>
+            <div class="kpi-subtext">Strong rating, low negatives</div>
           </div>
           <div class="kpi-card">
             <div class="kpi-label">Watchlist SKUs</div>
-            <div class="kpi-value" style="color: var(--status-watch);">540</div>
-            <div class="kpi-subtext">Moderate returns or ratings</div>
+            <div class="kpi-value" id="kpiHealthWatch" style="color: var(--status-watch);">-</div>
+            <div class="kpi-subtext">Moderate ratings or issues</div>
           </div>
           <div class="kpi-card">
             <div class="kpi-label">At-Risk SKUs</div>
-            <div class="kpi-value" style="color: var(--status-at-risk);">180</div>
-            <div class="kpi-subtext">Return rate >8% or rating <3.0</div>
+            <div class="kpi-value" id="kpiHealthRisk" style="color: var(--status-at-risk);">-</div>
+            <div class="kpi-subtext">Elevated negative feedback</div>
           </div>
         </div>
 
@@ -590,12 +589,11 @@
                   <th>Stock Code</th>
                   <th>Description</th>
                   <th>Price</th>
-                  <th>Net Revenue</th>
-                  <th>Units</th>
-                  <th>Return Rate</th>
+                  <th>Total Reviews</th>
+                  <th>Units Sold</th>
+                  <th>Negative %</th>
                   <th>Rating</th>
                   <th>Status</th>
-                  <th>Evaluation Rationale</th>
                 </tr>
               </thead>
               <tbody></tbody>
