@@ -112,7 +112,7 @@ class handler(BaseHTTPRequestHandler):
             where_clauses.append("r.has_image = 1")
             
         if search:
-            where_clauses.append("(UPPER(p.title) LIKE :search OR UPPER(r.text) LIKE :search)")
+            where_clauses.append("(UPPER(TO_CHAR(p.title)) LIKE :search OR UPPER(TO_CHAR(r.text)) LIKE :search)")
             params["search"] = f"%{search.upper()}%"
 
         where_sql = ("WHERE " + " AND ".join(where_clauses)) if where_clauses else ""
@@ -128,7 +128,7 @@ class handler(BaseHTTPRequestHandler):
                 CASE WHEN r.rating >= 4 THEN 'POSITIVE' WHEN r.rating <= 2 THEN 'NEGATIVE' ELSE 'NEUTRAL' END AS sentiment,
                 r.text AS review_text,
                 r.has_image AS has_media,
-                (SELECT MIN(image_url) FROM REVIEW_IMAGES ri WHERE ri.review_id = r.review_id) AS media_url,
+                (SELECT MIN(TO_CHAR(image_url)) FROM REVIEW_IMAGES ri WHERE ri.review_id = r.review_id) AS media_url,
                 TO_CHAR(r.review_date, 'YYYY-MM-DD') AS review_date
             FROM REVIEWS r
             JOIN PRODUCTS p ON r.product_id = p.product_id
