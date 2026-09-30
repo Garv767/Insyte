@@ -22,6 +22,8 @@ class handler(BaseHTTPRequestHandler):
                 data = self._get_cohort_retention_matrix()
             elif path.endswith("/aov"):
                 data = self._get_aov_trend()
+            elif path.endswith("/trends"):
+                data = self._get_sales_trends_mock()
             else:
                 send_json_response(self, 404, {"error": f"Unknown path: {path}"})
                 return
@@ -68,4 +70,20 @@ class handler(BaseHTTPRequestHandler):
             {"period": "2024-10", "aov": 204.93, "orders": 5290},
             {"period": "2024-11", "aov": 202.86, "orders": 6450},
             {"period": "2024-12", "aov": 200.74, "orders": 5890}
+        ]
+
+    def _get_sales_trends_mock(self) -> list:
+        return [
+            {"period_label": "2024-01", "net_revenue": 638000, "returns": 42000},
+            {"period_label": "2024-02", "net_revenue": 668000, "returns": 45000},
+            {"period_label": "2024-03", "net_revenue": 781000, "returns": 51000},
+            {"period_label": "2024-04", "net_revenue": 736000, "returns": 52000},
+            {"period_label": "2024-05", "net_revenue": 819000, "returns": 68000},
+            {"period_label": "2024-06", "net_revenue": 847000, "returns": 72000},
+            {"period_label": "2024-07", "net_revenue": 818000, "returns": 70000},
+            {"period_label": "2024-08", "net_revenue": 867000, "returns": 76000},
+            {"period_label": "2024-09", "net_revenue": 966000, "returns": 85000},
+            {"period_label": "2024-10", "net_revenue": 1084000, "returns": 89000},
+            {"period_label": "2024-11", "net_revenue": 1308000, "returns": 115000},
+            {"period_label": "2024-12", "net_revenue": 1182000, "returns": 98000}
         ]

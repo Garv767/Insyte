@@ -393,7 +393,7 @@ async function loadSalesModule() {
   }
 
   // 1. Gross vs Net Breakdown Chart
-  const trendsRes = await fetch("/api/overview/trends");
+  const trendsRes = await fetch("/api/sales/trends");
   const trends = await trendsRes.json();
   const ctxGross = document.getElementById("salesGrossNetChart").getContext("2d");
   new Chart(ctxGross, {
