@@ -555,7 +555,7 @@ async function loadReviewExplorer(sentiment = "ALL") {
       <td>★ ${r.rating}</td>
       <td><span class="badge ${r.sentiment === 'POSITIVE' ? 'badge-healthy' : (r.sentiment === 'NEGATIVE' ? 'badge-at-risk' : 'badge-watch')}">${r.sentiment}</span></td>
       <td style="max-width:320px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${r.review_text}</td>
-      <td>${r.has_media ? '📷 Yes' : '—'}</td>
+      <td>${r.has_media ? (r.media_url ? `<img src="${r.media_url}" style="height:36px; border-radius:4px; object-fit:cover;" onerror="this.outerHTML='📷 Yes'" />` : '📷 Yes') : '—'}</td>
       <td>${r.review_date}</td>
     </tr>
   `).join("");

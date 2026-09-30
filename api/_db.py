@@ -12,6 +12,12 @@ def _decode_wallet_to_tmpdir():
     if not wallet_b64:
         raise RuntimeError("WALLET_BASE64 environment variable is not set")
 
+    wallet_b64 = wallet_b64.strip()
+    # Add missing padding if the user copy-paste truncated the '=' signs
+    missing_padding = len(wallet_b64) % 4
+    if missing_padding:
+        wallet_b64 += '=' * (4 - missing_padding)
+
     wallet_zip = base64.b64decode(wallet_b64)
     tmp_dir = tempfile.mkdtemp(prefix="insyte_wallet_")
 

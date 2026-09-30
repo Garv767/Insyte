@@ -127,6 +127,7 @@ class handler(BaseHTTPRequestHandler):
                 p.price,
                 p.average_rating,
                 p.rating_number,
+                p.product_image_urls,
                 pf.review_count,
                 pf.avg_review_rating,
                 pf.total_helpful_votes,
@@ -148,6 +149,17 @@ class handler(BaseHTTPRequestHandler):
             return {"error": "Product not found"}
 
         product = rows[0]
+        
+        # Attach a formatted metadata object for the "Inspect JSON" UI
+        product["metadata_json"] = {
+            "product_id": product.get("product_id"),
+            "title": str(product.get("title", "")),
+            "store": str(product.get("store", "")),
+            "main_category": str(product.get("main_category", "")),
+            "categories": str(product.get("categories", "")),
+            "description": str(product.get("description", "")),
+            "images": str(product.get("product_image_urls", ""))
+        }
 
         reviews_sql = """
             SELECT
