@@ -1,15 +1,13 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "app/app.py",
-      "use": "@vercel/python"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "app/app.py"
-    }
+  "rewrites": [
+    { "source": "/api/overview/:path*", "destination": "/api/overview" },
+    { "source": "/api/customers/:path*", "destination": "/api/customers" },
+    { "source": "/api/products/:path*", "destination": "/api/products" },
+    { "source": "/api/sales/:path*", "destination": "/api/sales" },
+    { "source": "/api/reviews/:path*", "destination": "/api/reviews" },
+    { "source": "/api/health/:path*", "destination": "/api/health" },
+    { "source": "/api/search/:path*", "destination": "/api/search" },
+    { "source": "/api/sql/:path*", "destination": "/api/sql" }
   ]
 }
