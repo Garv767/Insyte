@@ -190,9 +190,10 @@ function renderOverviewRevenueChart(data) {
         {
           label: "Verified Reviews",
           data: data.map(d => d.verified_reviews),
-          borderColor: "rgba(56, 189, 248, 0.5)",
-          borderWidth: 1.5,
-          pointRadius: 0,
+          borderColor: "#f59e0b",
+          borderWidth: 2,
+          pointRadius: 3,
+          tension: 0.35,
           fill: false
         }
       ]
