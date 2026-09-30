@@ -5,6 +5,7 @@ import tempfile
 import oracledb
 
 _connection_pool = None
+_cached_wallet_dir = None
 
 def _decode_wallet_to_tmpdir():
     """Decode WALLET_BASE64 to a temp directory and return the path."""
@@ -34,6 +35,7 @@ def get_connection():
     Reuses module-level pool on warm Lambda invocations.
     """
     global _connection_pool
+    global _cached_wallet_dir
 
     if _connection_pool is not None:
         try:
@@ -42,22 +44,29 @@ def get_connection():
             _connection_pool = None  # force re-init on stale pool
 
     # Try local wallet first, else decode base64
-    wallet_dir = os.environ.get("WALLET_DIR", os.path.abspath("wallet"))
-    if not os.path.isdir(wallet_dir):
-        wallet_dir = _decode_wallet_to_tmpdir()
+    if _cached_wallet_dir and os.path.isdir(_cached_wallet_dir):
+        wallet_dir = _cached_wallet_dir
+    else:
+        wallet_dir = os.environ.get("WALLET_DIR", os.path.abspath("wallet"))
+        if not os.path.isdir(wallet_dir):
+            wallet_dir = _decode_wallet_to_tmpdir()
+            _cached_wallet_dir = wallet_dir
 
     db_user = os.environ.get("APP_ADMIN_USER", os.environ.get("DB_USER", "ADMIN"))
     db_password = os.environ.get("APP_ADMIN_PASSWORD", os.environ.get("DB_PASSWORD", ""))
     
-    conn = oracledb.connect(
+    _connection_pool = oracledb.create_pool(
         user=db_user,
         password=db_password,
         dsn=os.environ.get("TNS_NAME", "insyte_high"),
         config_dir=wallet_dir,
         wallet_location=wallet_dir,
         wallet_password=os.environ.get("WALLET_PASSWORD", ""),
+        min=1,
+        max=4,
+        increment=1
     )
-    return conn
+    return _connection_pool.acquire()
 
 def execute_query(conn, sql: str, params: dict = None) -> list:
     """Execute a SELECT query and return list of dicts."""
