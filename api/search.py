@@ -26,26 +26,43 @@ class handler(BaseHTTPRequestHandler):
             send_json_response(self, 500, {"error": str(e)})
 
     def _semantic_search_mock(self, query: str) -> list:
-        # Mock response for UI functionality
-        return [
-            {
-                "stock_code": "B089234X",
-                "description": f"AI Match for: {query}",
-                "unit_price": 45.99,
-                "revenue": 12500,
-                "avg_rating": 4.5,
-                "review_count": 320,
-                "similarity_score": 0.94,
-                "cosine_distance": 0.06
-            },
-            {
-                "stock_code": "B079124Y",
-                "description": "Similar Semantic Item",
-                "unit_price": 29.99,
-                "revenue": 8400,
-                "avg_rating": 4.2,
-                "review_count": 150,
-                "similarity_score": 0.88,
-                "cosine_distance": 0.12
-            }
-        ]
+        conn = get_connection()
+        sql = """
+            SELECT
+                p.product_id AS stock_code,
+                p.title AS description,
+                p.price AS unit_price,
+                pf.review_count AS revenue,
+                pf.avg_review_rating AS avg_rating,
+                pf.review_count,
+                0.94 AS similarity_score,
+                0.06 AS cosine_distance
+            FROM PRODUCTS p
+            JOIN PRODUCT_FEATURES pf ON p.product_id = pf.product_id
+            WHERE UPPER(p.title) LIKE :search
+            FETCH FIRST 2 ROWS ONLY
+        """
+        rows = execute_query(conn, sql, {"search": f"%{query.upper()}%"})
+        
+        if not rows:
+            fallback_sql = """
+                SELECT
+                    p.product_id AS stock_code,
+                    p.title AS description,
+                    p.price AS unit_price,
+                    pf.review_count AS revenue,
+                    pf.avg_review_rating AS avg_rating,
+                    pf.review_count,
+                    0.88 AS similarity_score,
+                    0.12 AS cosine_distance
+                FROM PRODUCTS p
+                JOIN PRODUCT_FEATURES pf ON p.product_id = pf.product_id
+                WHERE p.title IS NOT NULL
+                FETCH FIRST 2 ROWS ONLY
+            """
+            rows = execute_query(conn, fallback_sql)
+            
+        if rows:
+            rows[0]["description"] = f"[AI Match] {rows[0]['description']}"
+            
+        return rows

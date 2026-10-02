@@ -101,15 +101,15 @@ function renderVectorResults(items, container) {
   }
 
   container.innerHTML = items.map((item, idx) => `
-    <div style="background: rgba(255,255,255,0.03); border:1px solid var(--border-subtle); border-radius: var(--radius-md); padding:16px; display:flex; justify-content:space-between; align-items:center;">
+    <div style="background: rgba(255,255,255,0.03); border:1px solid var(--border-subtle); border-radius: var(--radius-md); padding:16px; display:flex; justify-content:space-between; align-items:center; cursor:pointer;" onclick="showProductDetails('${item.stock_code}')">
       <div>
         <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
           <span style="font-weight:700; color:var(--accent-green-light); font-size:0.85rem;">#${idx+1} [${item.stock_code}]</span>
           <span style="font-weight:600; color:var(--text-primary);">${item.description}</span>
         </div>
         <div style="font-size:0.78rem; color:var(--text-muted); display:flex; gap:16px;">
-          <span>Price: £${item.unit_price.toFixed(2)}</span>
-          <span>Revenue: £${item.revenue.toLocaleString()}</span>
+          <span>Price: ₹${item.unit_price.toFixed(2)}</span>
+          <span>Revenue: ₹${item.revenue.toLocaleString()}</span>
           <span>Rating: ★ ${item.avg_rating} (${item.review_count} revs)</span>
         </div>
       </div>
@@ -298,8 +298,7 @@ async function loadCustomerModule() {
         <td style="font-weight:600; color:var(--text-primary);">${s.rfm_segment}</td>
         <td>${s.customer_count.toLocaleString()}</td>
         <td>${s.customer_pct}%</td>
-        <td style="color:var(--accent-green-light); font-weight:600;">£${s.total_revenue.toLocaleString()}</td>
-        <td>${s.avg_order_frequency} orders</td>
+        <td style="color:var(--accent-green-light); font-weight:600;">₹${s.total_revenue.toLocaleString()}</td>
       </tr>
     `).join("");
 
@@ -324,7 +323,7 @@ async function loadCustomerRegistry(segment = "ALL") {
       <td>${c.country}</td>
       <td>${c.recency_days} days ago</td>
       <td>${c.frequency_orders}</td>
-      <td style="color:var(--accent-green-light); font-weight:600;">£${(c.monetary_spend || 0).toLocaleString()}</td>
+      <td style="color:var(--accent-green-light); font-weight:600;">₹${(c.monetary_spend || 0).toLocaleString()}</td>
       <td style="font-family: var(--font-mono);">${c.r_score}${c.f_score}${c.m_score}</td>
       <td><span class="badge ${c.rfm_segment === 'Champions' ? 'badge-healthy' : (c.rfm_segment === 'At Risk' ? 'badge-at-risk' : 'badge-watch')}">${c.rfm_segment}</span></td>
     </tr>
@@ -340,7 +339,7 @@ async function loadProductModule() {
     const kpis = await kpiRes.json();
     document.getElementById("kpiProdTotal").textContent = kpis.total_products?.toLocaleString() || "0";
     document.getElementById("kpiProdAvgRating").textContent = (kpis.avg_catalog_rating || 0).toFixed(2) + " ★";
-    document.getElementById("kpiProdAvgPrice").textContent = "£" + (kpis.avg_price || 0).toFixed(2);
+    document.getElementById("kpiProdAvgPrice").textContent = "₹" + (kpis.avg_price || 0).toFixed(2);
     document.getElementById("kpiProdHealthy").textContent = kpis.healthy_count?.toLocaleString() || "0";
   } catch (err) {
     console.error("Error loading product KPIs:", err);
@@ -360,21 +359,68 @@ async function loadProductCatalog(sortBy = "revenue") {
     <tr>
       <td style="font-family: var(--font-mono); color: var(--text-primary);">${p.stock_code}</td>
       <td style="max-width: 280px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${p.description}</td>
-      <td>£${(p.unit_price || 0).toFixed(2)}</td>
+      <td>₹${(p.unit_price || 0).toFixed(2)}</td>
       <td style="color:var(--accent-green-light); font-weight:600;">${(p.review_count || 0).toLocaleString()}</td>
       <td>${(p.total_helpful_votes || 0).toLocaleString()}</td>
       <td>${p.negative_pct}%</td>
       <td>★ ${p.avg_review_rating}</td>
-      <td><button class="filter-select" style="padding: 3px 8px; font-size: 0.72rem;" onclick="showProductJson('${p.stock_code}')">Inspect JSON</button></td>
+      <td><button class="filter-select" style="padding: 3px 8px; font-size: 0.72rem;" onclick="showProductDetails('${p.stock_code}')">Inspect Item</button></td>
     </tr>
   `).join("");
 }
 
-window.showProductJson = async function(stockCode) {
+window.showProductDetails = async function(stockCode) {
   const res = await fetch(`/api/products/${stockCode}`);
   const data = await res.json();
-  alert(`JSON Metadata for [${stockCode}]:\n` + JSON.stringify(data.metadata_json, null, 2));
+  const meta = data.metadata_json || {};
+  
+  const modal = document.getElementById("productDetailsModal");
+  document.getElementById("productDetailsSubtitle").textContent = `Stock Code: ${stockCode}`;
+  
+  let html = `<div style="display: flex; gap: 16px; margin-bottom: 16px;">`;
+  
+  let imgUrl = "";
+  if (meta.images) {
+    try {
+      let parsed = JSON.parse(meta.images.replace(/'/g, '"'));
+      if (Array.isArray(parsed) && parsed.length > 0) imgUrl = parsed[0];
+      else if (typeof parsed === 'string') imgUrl = parsed;
+    } catch(e) {
+      if (meta.images.startsWith("http")) imgUrl = meta.images.split(",")[0].trim();
+    }
+  } else if (meta.main_image_url) {
+    imgUrl = meta.main_image_url;
+  } else if (meta.image_url) {
+    imgUrl = meta.image_url;
+  }
+
+  if (imgUrl) {
+    html += `<img src="${imgUrl}" style="width: 150px; height: 150px; object-fit: cover; border-radius: 8px;" onerror="this.style.display='none'">`;
+  }
+  
+  html += `<div>
+    <h3 style="color: var(--text-primary); margin-bottom: 8px;">${meta.title || meta.name || 'Product Details'}</h3>
+    <div style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 8px;">
+      <b>Store:</b> ${meta.store || 'N/A'}<br>
+      <b>Category:</b> ${meta.main_category || 'N/A'}<br>
+      <b>Price:</b> ₹${data.price !== null && data.price !== undefined ? data.price : 'N/A'}<br>
+    </div>
+    <div style="font-size: 0.8rem; color: var(--text-muted); max-height: 100px; overflow-y: auto;">
+      ${meta.description || JSON.stringify(meta, null, 2)}
+    </div>
+  </div></div>`;
+  
+  html += `<div style="font-size: 0.75rem; color: var(--text-muted); background: rgba(255,255,255,0.05); padding: 8px; border-radius: 4px; max-height: 200px; overflow-y: auto;"><pre>${JSON.stringify(meta, null, 2)}</pre></div>`;
+  
+  document.getElementById("productDetailsContent").innerHTML = html;
+  modal.style.display = "flex";
 };
+
+if (document.getElementById("closeProductModalBtn")) {
+  document.getElementById("closeProductModalBtn").addEventListener("click", () => {
+    document.getElementById("productDetailsModal").style.display = "none";
+  });
+}
 
 // -----------------------------------------------------------------------------
 // 7. Module 5: Reviews & Media
@@ -437,20 +483,74 @@ async function loadReviewModule() {
   });
 
   // 3. Media Gallery Cards
-  const galRes = await fetch("/api/reviews/gallery?limit=6");
-  const gallery = await galRes.json();
-  const galleryGrid = document.getElementById("mediaGalleryGrid");
-  galleryGrid.innerHTML = gallery.map(item => `
-    <div class="media-card">
-      <img src="${item.media_url}" class="media-thumbnail" alt="${item.product_name}" onerror="this.src='https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=400'">
-      <div class="media-body">
-        <div class="media-product">${item.product_name}</div>
-        <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:4px;">★ ${item.rating} · ${item.sentiment}</div>
-        <div class="media-review-snippet">"${item.review_text}"</div>
-        <div style="font-size:0.7rem; color:var(--text-muted);">${item.review_date}</div>
+  let currentGalleryPage = 1;
+
+  window.loadGalleryPage = async function(page) {
+    const galRes = await fetch(`/api/reviews/explorer?media_only=true&per_page=8&page=${page}`);
+    const gallery = await galRes.json();
+    
+    if (gallery.length === 0 && page > 1) {
+      currentGalleryPage--; // revert
+      return;
+    }
+    
+    window.currentGalleryData = gallery;
+    const galleryGrid = document.getElementById("mediaGalleryGrid");
+    
+    galleryGrid.innerHTML = gallery.map((item, idx) => `
+      <div class="media-card" style="cursor:pointer;" onclick="showReviewDetails(${idx})">
+        <img src="${item.media_url}" class="media-thumbnail" alt="${item.product_name}" onerror="this.src='https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=400'">
+        <div class="media-body">
+          <div class="media-product">${item.product_name}</div>
+          <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:4px;">★ ${item.rating} · ${item.sentiment}</div>
+          <div class="media-review-snippet" style="display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; max-height: 5.5em;">"${item.review_text}"</div>
+          <div style="font-size:0.7rem; color:var(--text-muted);">${item.review_date}</div>
+        </div>
       </div>
-    </div>
-  `).join("");
+    `).join("");
+  };
+
+  await loadGalleryPage(currentGalleryPage);
+
+  const prevBtn = document.getElementById("prevGalleryBtn");
+  const nextBtn = document.getElementById("nextGalleryBtn");
+  
+  if (prevBtn && nextBtn) {
+    prevBtn.addEventListener("click", () => {
+      if (currentGalleryPage > 1) {
+        currentGalleryPage--;
+        loadGalleryPage(currentGalleryPage);
+      }
+    });
+    nextBtn.addEventListener("click", () => {
+      currentGalleryPage++;
+      loadGalleryPage(currentGalleryPage);
+    });
+  }
+
+  window.showReviewDetails = function(idx) {
+    if (!window.currentGalleryData || !window.currentGalleryData[idx]) return;
+    const item = window.currentGalleryData[idx];
+    const modal = document.getElementById("reviewDetailsModal");
+    let html = `
+      <div style="display:flex; flex-direction:column; gap:16px;">
+        <img src="${item.media_url}" style="width:100%; max-height:300px; object-fit:contain; border-radius:8px; background:#000;" onerror="this.style.display='none'">
+        <div>
+          <h3 style="color:var(--text-primary); margin-bottom:4px;">${item.product_name}</h3>
+          <div style="font-size:0.85rem; color:var(--text-muted); margin-bottom:12px;">★ ${item.rating} · ${item.sentiment} · ${item.review_date}</div>
+          <div style="font-size:0.9rem; color:var(--text-secondary); line-height:1.5;">${item.review_text}</div>
+        </div>
+      </div>
+    `;
+    document.getElementById("reviewDetailsContent").innerHTML = html;
+    modal.style.display = "flex";
+  };
+
+  if (document.getElementById("closeReviewModalBtn")) {
+    document.getElementById("closeReviewModalBtn").addEventListener("click", () => {
+      document.getElementById("reviewDetailsModal").style.display = "none";
+    });
+  }
 
   // 4. Review Explorer Table
   loadReviewExplorer();
@@ -505,7 +605,7 @@ async function loadHealthMatrix(status = "ALL") {
     <tr>
       <td style="font-family: var(--font-mono); color:var(--text-primary);">${m.stock_code}</td>
       <td style="font-weight:500; color:var(--text-primary);">${m.description}</td>
-      <td>£${(m.unit_price || 0).toFixed(2)}</td>
+      <td>₹${(m.unit_price || 0).toFixed(2)}</td>
       <td style="color:var(--accent-green-light); font-weight:600;">${(m.review_count || 0).toLocaleString()}</td>
       <td>${(m.units_sold || 0).toLocaleString()}</td>
       <td style="color: ${m.negative_pct > 25 ? 'var(--status-at-risk)' : 'var(--text-secondary)'}; font-weight:600;">${m.negative_pct}%</td>

@@ -50,7 +50,7 @@ WITH customer_aggregations AS (
     SELECT 
         c.customer_id,
         c.country,
-        ROUND(CAST(SYSTIMESTAMP AS DATE) - CAST(MAX(o.invoice_date) AS DATE)) AS recency_days,
+        ROUND(CAST((SELECT MAX(invoice_date) FROM ORDERS) AS DATE) - CAST(MAX(o.invoice_date) AS DATE)) AS recency_days,
         COUNT(DISTINCT o.invoice_no) AS frequency_orders,
         SUM(oi.quantity * oi.unit_price) AS monetary_spend,
         SUM(oi.quantity) AS total_units
@@ -85,7 +85,7 @@ SELECT
     m_score,
     (r_score * 100 + f_score * 10 + m_score) AS rfm_combined,
     CASE 
-        WHEN r_score >= 4 AND f_score >= 4 AND m_score >= 4 THEN 'Champions'
+        WHEN r_score >= 4 AND f_score >= 4 AND m_score >= 4 AND frequency_orders > 1 AND monetary_spend >= 50 THEN 'Champions'
         WHEN r_score >= 3 AND f_score >= 3 THEN 'Loyal Customers'
         WHEN r_score >= 4 AND f_score <= 2 THEN 'Recent Customers'
         WHEN r_score <= 2 AND f_score >= 3 THEN 'At Risk'

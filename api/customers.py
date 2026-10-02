@@ -12,8 +12,8 @@ WITH rfm_base AS (
         verified_purchase_rate,
         first_review_date,
         last_review_date,
-        ROUND(SYSDATE - last_review_date) AS recency_days,
-        NTILE(5) OVER (ORDER BY ROUND(SYSDATE - last_review_date) DESC) AS r_score,
+        ROUND(TO_DATE('2023-09-07', 'YYYY-MM-DD') - last_review_date) AS recency_days,
+        NTILE(5) OVER (ORDER BY ROUND(TO_DATE('2023-09-07', 'YYYY-MM-DD') - last_review_date) DESC) AS r_score,
         NTILE(5) OVER (ORDER BY review_count ASC)                       AS f_score,
         NTILE(5) OVER (ORDER BY avg_rating_given ASC)                   AS m_score
     FROM CUSTOMERS
@@ -34,8 +34,8 @@ rfm_scored AS (
         m_score,
         (r_score + f_score + m_score) AS rfm_total,
         CASE
-            WHEN r_score = 5 AND f_score >= 4              THEN 'Champions'
-            WHEN r_score >= 4 AND f_score >= 3             THEN 'Loyal Reviewers'
+            WHEN r_score = 5 AND f_score >= 4 AND review_count > 1         THEN 'Champions'
+            WHEN r_score >= 4 AND f_score >= 3                             THEN 'Loyal Reviewers'
             WHEN r_score >= 3 AND f_score >= 2             THEN 'Potential Loyalists'
             WHEN r_score = 5 AND f_score < 2               THEN 'New Reviewers'
             WHEN r_score <= 2 AND f_score >= 4             THEN 'At Risk'

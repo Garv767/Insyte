@@ -232,7 +232,6 @@
                     <th>Customers</th>
                     <th>Share %</th>
                     <th>Total Spend</th>
-                    <th>Avg Orders</th>
                   </tr>
                 </thead>
                 <tbody></tbody>
@@ -401,6 +400,10 @@
               <div class="card-title">Customer Media Asset Gallery</div>
               <div class="card-subtitle">Customer photos and attachments parsed from REVIEW_MEDIA</div>
             </div>
+            <div style="display: flex; gap: 8px;">
+              <button class="filter-select" id="prevGalleryBtn" style="padding: 4px 10px;">&lt;</button>
+              <button class="filter-select" id="nextGalleryBtn" style="padding: 4px 10px;">&gt;</button>
+            </div>
           </div>
           <div class="gallery-grid" id="mediaGalleryGrid">
             <!-- Rendered via JS -->
@@ -567,6 +570,33 @@
       <button id="closeVectorModalBtn" class="filter-select" style="padding: 4px 10px;">Close ✕</button>
     </div>
     <div id="vectorSearchResultsList" style="display: flex; flex-direction: column; gap: 12px; margin-top: 12px;"></div>
+  </div>
+</div>
+
+<!-- Modal: Product Details -->
+<div id="productDetailsModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 1000; backdrop-filter: blur(8px); align-items: center; justify-content: center;">
+  <div class="card" style="width: 600px; max-height: 85vh; overflow-y: auto; position: relative;">
+    <div class="card-header">
+      <div>
+        <div class="card-title">Product Details</div>
+        <div class="card-subtitle" id="productDetailsSubtitle"></div>
+      </div>
+      <button id="closeProductModalBtn" class="filter-select" style="padding: 4px 10px;">Close ✕</button>
+    </div>
+    <div id="productDetailsContent" style="margin-top: 16px;"></div>
+  </div>
+</div>
+
+<!-- Modal: Review Details -->
+<div id="reviewDetailsModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 1000; backdrop-filter: blur(8px); align-items: center; justify-content: center;">
+  <div class="card" style="width: 500px; max-height: 85vh; overflow-y: auto; position: relative;">
+    <div class="card-header">
+      <div>
+        <div class="card-title">Review Details</div>
+      </div>
+      <button id="closeReviewModalBtn" class="filter-select" style="padding: 4px 10px;">Close ✕</button>
+    </div>
+    <div id="reviewDetailsContent" style="margin-top: 16px;"></div>
   </div>
 </div>
 
