@@ -114,7 +114,7 @@ class handler(BaseHTTPRequestHandler):
                 ROUND(AVG(recency_days), 0)          AS avg_recency_days,
                 ROUND(AVG(review_count), 1)          AS avg_order_frequency,
                 ROUND(AVG(avg_rating_given), 2)      AS avg_rating_given,
-                SUM(review_count)                    AS total_revenue
+                SUM(review_count * 750)              AS total_revenue
             FROM rfm_scored
             GROUP BY rfm_segment
             ORDER BY customer_count DESC
@@ -153,7 +153,7 @@ class handler(BaseHTTPRequestHandler):
             SELECT
                 customer_id,
                 review_count AS frequency_orders,
-                ROUND(avg_rating_given * review_count, 2) AS monetary_spend,
+                ROUND(review_count * 750, 2) AS monetary_spend,
                 'Global' AS country,
                 total_helpful_votes,
                 verified_purchase_rate,

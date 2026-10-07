@@ -13,6 +13,8 @@ oradata/
 wallet/
 oracle_wallet/
 Wallet_*.zip
+wallet_base64*.txt
+*.db
 *.sso
 *.p12
 
